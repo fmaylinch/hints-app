@@ -15,11 +15,28 @@ class CardScreen extends StatelessWidget {
     return allCtrls;
   }
 
+  void _saveCardAndGoBack(BuildContext context) {
+    print("Will save card"); // TODO
+    _goBack(context);
+  }
+
+  void _goBack(BuildContext context) {
+    // TODO: We could save here, but then we need to intercept other ways of going back.
+    Navigator.pop(context, true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('View Card', style: TextStyle(fontSize: 30, color: Colors.white))
+        title: Text('View Card', style: TextStyle(fontSize: 30, color: Colors.white)),
+        leading: new IconButton(
+            icon: new Icon(Icons.arrow_back),
+            onPressed: () => _goBack(context)
+        ),
+        actions: <Widget>[
+          IconButton(icon: Icon(Icons.save), onPressed: () => _saveCardAndGoBack(context))
+        ]
       ),
       body: Container(
         child: ListView(
