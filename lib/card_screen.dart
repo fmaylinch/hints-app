@@ -15,41 +15,33 @@ class CardScreen extends StatelessWidget {
     return allCtrls;
   }
 
-  void _saveCardAndGoBack(BuildContext context) {
+  bool _saveCardAndGoBack(BuildContext context) {
     print("Will save card"); // TODO
-    _goBack(context);
-  }
-
-  void _goBack(BuildContext context) {
-    // TODO: We could save here, but then we need to intercept other ways of going back.
     Navigator.pop(context, true);
+    return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('View Card', style: TextStyle(fontSize: 30, color: Colors.white)),
-        leading: new IconButton(
-            icon: new Icon(Icons.arrow_back),
-            onPressed: () => _goBack(context)
+    return WillPopScope( // TODO: This disables swipe back https://github.com/flutter/flutter/issues/14203
+      onWillPop: () async => _saveCardAndGoBack(context),
+      child: Scaffold(
+        appBar: AppBar(
+            title: Text('View Card', style: TextStyle(fontSize: 30, color: Colors.white))
         ),
-        actions: <Widget>[
-          IconButton(icon: Icon(Icons.save), onPressed: () => _saveCardAndGoBack(context))
-        ]
-      ),
-      body: Container(
-        child: ListView(
-          children: _controllers.map((controller) =>
-              Container(
-                padding: EdgeInsets.all(8),
-                child: TextFormField(
-                    style: TextStyle(fontSize: 20),
-                    maxLines: null,
-                    controller: controller
-                ),
-              )
-          ).toList(),
+        body: Container(
+          child: ListView(
+            children: _controllers.map((controller) =>
+                Container(
+                  padding: EdgeInsets.all(8),
+                  child: TextFormField(
+                      style: TextStyle(fontSize: 20),
+                      maxLines: null,
+                      controller: controller
+                  ),
+                )
+            ).toList(),
+          ),
         ),
       ),
     );
