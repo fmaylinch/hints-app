@@ -22,7 +22,7 @@ class HintsCardsState extends State<HintsCards> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Hints Cards', style: TextStyle(fontSize: 30, color: Colors.white)),
+        title: Text('All Cards', style: TextStyle(fontSize: 30, color: Colors.white)),
         actions: <Widget>[
           IconButton(icon: Icon(Icons.add), onPressed: _addCard,)
         ],

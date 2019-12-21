@@ -4,19 +4,15 @@ import 'hints_card.dart';
 class CardScreen extends StatelessWidget {
 
   final HintsCard card;
-  final List<TextEditingController> _controllers;
+  final TextEditingController _hintsController;
+  final TextEditingController _notesController;
 
   CardScreen(this.card) :
-        _controllers = _buildControllers(card);
-
-  static List<TextEditingController> _buildControllers(HintsCard card) {
-    var hintCtrls = card.hints.map((it) => TextEditingController(text: it)).toList();
-    var allCtrls = [...hintCtrls, TextEditingController(text: card.notes)];
-    return allCtrls;
-  }
+        _hintsController = TextEditingController(text: card.hints.join("\n")),
+        _notesController = TextEditingController(text: card.notes);
 
   bool _saveCardAndGoBack(BuildContext context) {
-    print("Will save card"); // TODO
+    print("Will save card"); // TODO: save card; first split hints (removing blank lines)
     Navigator.pop(context, true);
     return false;
   }
@@ -27,22 +23,28 @@ class CardScreen extends StatelessWidget {
       onWillPop: () async => _saveCardAndGoBack(context),
       child: Scaffold(
         appBar: AppBar(
-            title: Text('View Card', style: TextStyle(fontSize: 30, color: Colors.white))
+            title: Text('Edit Card', style: TextStyle(fontSize: 30, color: Colors.white))
         ),
         body: Container(
           child: ListView(
-            children: _controllers.map((controller) =>
-                Container(
-                  padding: EdgeInsets.all(8),
-                  child: TextFormField(
-                      style: TextStyle(fontSize: 20),
-                      maxLines: null,
-                      controller: controller
-                  ),
-                )
-            ).toList(),
+            children: [
+              _buildField(_hintsController, "Write hints, one per line"),
+              _buildField(_notesController, "Write optional notes")
+            ]
           ),
         ),
+      ),
+    );
+  }
+
+  _buildField(TextEditingController controller, String hintText) {
+    return Container(
+      padding: EdgeInsets.all(8),
+      child: TextFormField(
+          decoration: InputDecoration(hintText: hintText),
+          style: TextStyle(fontSize: 20),
+          maxLines: null,
+          controller: controller
       ),
     );
   }
