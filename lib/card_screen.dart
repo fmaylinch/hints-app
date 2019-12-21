@@ -12,8 +12,17 @@ class CardScreen extends StatelessWidget {
         _notesController = TextEditingController(text: card.notes);
 
   bool _saveCardAndGoBack(BuildContext context) {
-    print("Will save card"); // TODO: save card; first split hints (removing blank lines)
-    Navigator.pop(context, true);
+
+    final newHints = _hintsController.text.split("\n").where((x) => x.isNotEmpty).toList();
+    final newNotes = _notesController.text;
+
+    print("Card edited:");
+    print(" - Id: ${card.id}");
+    print(" - Hints: $newHints");
+    print(" - Notes: $newNotes");
+
+    var cardToSave = HintsCard(id: card.id, hints: newHints, notes: newNotes);
+    Navigator.pop(context, cardToSave);
     return false;
   }
 

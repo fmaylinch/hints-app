@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'hints_card.dart';
 import 'card_screen.dart';
 
@@ -12,9 +13,9 @@ class HintsCardsState extends State<HintsCards> {
 
   // TODO: Get from Service
   List<HintsCard> _cards = [
-    HintsCard(hints: ["buy", "покупать", "купить"], notes: "other notes"),
-    HintsCard(hints: ["speak, say", "говорить", "сказать"]),
-    HintsCard(hints: ["walk", "гулять", "погулять"]),
+    HintsCard(id: "1", hints: ["buy", "покупать", "купить"], notes: "other notes"),
+    HintsCard(id: "2", hints: ["speak, say", "говорить", "сказать"]),
+    HintsCard(id: "3", hints: ["walk", "гулять", "погулять"]),
   ];
 
   @override
@@ -24,7 +25,7 @@ class HintsCardsState extends State<HintsCards> {
       appBar: AppBar(
         title: Text('All Cards', style: TextStyle(fontSize: 30, color: Colors.white)),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.add), onPressed: _addCard,)
+          IconButton(icon: Icon(Icons.add), onPressed: () => _pushCreateCard())
         ],
       ),
       body: _buildCardList(),
@@ -45,11 +46,11 @@ class HintsCardsState extends State<HintsCards> {
 
     final card = _cards[index];
 
-    final allHintWidgets = card.hints.map((it) =>
-        Text(it, style: TextStyle(fontSize: 20)))
-        .toList();
-
-    final twoHintWidgets = card.hints.sublist(0, 2).map((it) =>
+    // TODO: How many items (hints) to display? How to display them?
+    // For now, we display a maximum of 2 hints, horizontally.
+    final maxItems = 2;
+    final numItems = min(maxItems, card.hints.length);
+    final hintWidgets = card.hints.sublist(0, numItems).map((it) =>
         Text(it, style: TextStyle(fontSize: 20)))
         .toList();
 
@@ -57,20 +58,24 @@ class HintsCardsState extends State<HintsCards> {
 
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: twoHintWidgets,
+        children: hintWidgets,
       ),
-      onTap: () => _openCard(card),
+      onTap: () => _pushEditCard(card),
     );
 
   }
 
-  _openCard(HintsCard card) {
-    Navigator.of(context).push(
+  void _pushCreateCard() {
+    _pushEditCard(HintsCard());
+  }
+
+  void _pushEditCard(HintsCard card) async {
+
+    final HintsCard newOrUpdatedCard = await Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => CardScreen(card))
     );
-  }
 
-  void _addCard() {
-    print("Will add a card"); // TODO
+    // TODO: Save card. If card id is null, this is a new card.
+    print("Will save or update card: ${newOrUpdatedCard.id}");
   }
 }
