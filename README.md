@@ -1,10 +1,21 @@
-# hints_app
+# HintsApp
 
-A new Flutter project.
+Flutter app to store Hint Cards. This is a kind of Memory Cards for studying.
+Here each card contains some hints (and other optional notes).
+The app will show you one of the hints, and you have to remember the rest. 
 
-## Getting Started
+## Check list
 
-This project is a starting point for a Flutter application.
+- ✅ Create Flutter project
+- ✅ Configure iOS and Web
+- ✅ Functional app but data in stored in memory
+- ❌ Store data in a persistent database
+- ❌ Play (show hints randomly)
+- ❌ Search
+- ❌ Add users, login, security
+- ❌ Configure Android
+
+## Information about Flutter
 
 A few resources to get you started if this is your first Flutter project:
 

@@ -81,6 +81,7 @@ class HintsCardsState extends State<HintsCards> {
     );
 
     if (newOrUpdatedCard == null) {
+      print("No need to update card");
       return; // no update
     }
 
