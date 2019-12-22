@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hints_app/card_screen.dart';
+import 'package:hints_app/cards_repo.dart';
+import 'package:hints_app/hints_card.dart';
+import 'package:hints_app/main.dart';
 import 'dart:math';
-import 'hints_card.dart';
-import 'card_screen.dart';
 
 class HintsCards extends StatefulWidget {
 
@@ -11,15 +13,14 @@ class HintsCards extends StatefulWidget {
 
 class HintsCardsState extends State<HintsCards> {
 
-  // TODO: Get from Service
-  List<HintsCard> _cards = [
-    HintsCard(id: "1", hints: ["buy", "покупать", "купить"], notes: "other notes"),
-    HintsCard(id: "2", hints: ["speak, say", "говорить", "сказать"]),
-    HintsCard(id: "3", hints: ["walk", "гулять", "погулять"]),
-  ];
+  CardsRepo _cardsRepo;
+  List<HintsCard> _cards;
 
   @override
   Widget build(BuildContext context) {
+
+    _cardsRepo = ServicesWidget.of(context).cardsRepo;
+    retrieveCards();
 
     return Scaffold(
       appBar: AppBar(
@@ -30,6 +31,10 @@ class HintsCardsState extends State<HintsCards> {
       ),
       body: _buildCardList(),
     );
+  }
+
+  void retrieveCards() {
+    _cards = _cardsRepo.getAll();
   }
 
   _buildCardList() {
@@ -75,7 +80,12 @@ class HintsCardsState extends State<HintsCards> {
         MaterialPageRoute(builder: (context) => CardScreen(card))
     );
 
-    // TODO: Save card. If card id is null, this is a new card.
-    print("Will save or update card: ${newOrUpdatedCard.id}");
+    if (newOrUpdatedCard == null) {
+      return; // no update
+    }
+
+    print("Will save or update card: $newOrUpdatedCard");
+    _cardsRepo.saveOrUpdate(newOrUpdatedCard);
+    retrieveCards();
   }
 }

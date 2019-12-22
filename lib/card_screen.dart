@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'hints_card.dart';
 
+/// Edits a card, which may have empty data (in case it's a new card)
+/// It pops the edited card, or null if there's no need to update.
+/// In case the hints are not filled, it will pop null, so no updates.
+/// TODO: Detect if the card was not updated.
 class CardScreen extends StatelessWidget {
 
   final HintsCard card;
@@ -13,7 +17,11 @@ class CardScreen extends StatelessWidget {
 
   bool _saveCardAndGoBack(BuildContext context) {
 
-    final newHints = _hintsController.text.split("\n").where((x) => x.isNotEmpty).toList();
+    final newHints = _hintsController.text
+        .split("\n")
+        .map((x) => x.trim())
+        .where((x) => x.isNotEmpty)
+        .toList();
     final newNotes = _notesController.text;
 
     print("Card edited:");
@@ -21,8 +29,10 @@ class CardScreen extends StatelessWidget {
     print(" - Hints: $newHints");
     print(" - Notes: $newNotes");
 
-    var cardToSave = HintsCard(id: card.id, hints: newHints, notes: newNotes);
+    var cardToSave = newHints.isEmpty ? null
+        : HintsCard(id: card.id, hints: newHints, notes: newNotes);
     Navigator.pop(context, cardToSave);
+
     return false;
   }
 

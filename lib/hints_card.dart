@@ -1,7 +1,12 @@
 
 class HintsCard {
-  final String id;
-  final List<String> hints;
-  final String notes;
-  const HintsCard({this.id, this.hints = const [], this.notes = ""});
+  String id;
+  List<String> hints;
+  String notes;
+  HintsCard({this.id, this.hints = const [], this.notes});
+
+  @override
+  String toString() {
+    return 'HintsCard{id: $id, hints: $hints, notes: $notes}';
+  }
 }
