@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'hints_card.dart';
 
 /// Edits a card, which may have empty data (in case it's a new card)
-/// It pops the edited card, or null if there's no need to update.
-/// In case the hints are not filled, it will pop null, so no updates.
+/// It pops a CardScreenResponse with the card and action to do.
+/// In case the hints are not filled, the action is nothing.
 class CardScreen extends StatelessWidget {
 
   final HintsCard card;
@@ -31,12 +31,20 @@ class CardScreen extends StatelessWidget {
     var newCard = HintsCard(id: card.id, hints: newHints, notes: newNotes);
 
     // Avoid saving incomplete or unmodified card
-    var cardToSave = newCard.hints.isNotEmpty && newCard != card ? newCard : null;
+    var updateNeeded = newCard.hints.isNotEmpty && newCard != card;
 
-    Navigator.pop(context, cardToSave);
+    final CardScreenAction action = updateNeeded
+        ? CardScreenAction.update : CardScreenAction.nothing;
+
+    Navigator.pop(context, CardScreenResponse(newCard, action));
 
     return false;
   }
+
+  _deleteCard(BuildContext context) {
+    Navigator.pop(context, CardScreenResponse(card, CardScreenAction.delete));
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +52,10 @@ class CardScreen extends StatelessWidget {
       onWillPop: () async => _saveCardAndGoBack(context),
       child: Scaffold(
         appBar: AppBar(
-            title: Text('Edit Card', style: TextStyle(fontSize: 30, color: Colors.white))
+            title: Text('Edit Card', style: TextStyle(fontSize: 30, color: Colors.white)),
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.delete), onPressed: () => _deleteCard(context))
+          ],
         ),
         body: Container(
           child: ListView(
@@ -70,3 +81,16 @@ class CardScreen extends StatelessWidget {
     );
   }
 }
+
+class CardScreenResponse {
+
+  final HintsCard card;
+  final CardScreenAction action;
+
+  CardScreenResponse(this.card, this.action);
+}
+
+enum CardScreenAction {
+  update, delete, nothing
+}
+

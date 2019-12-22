@@ -7,6 +7,7 @@ abstract class CardsRepo {
 
   List<HintsCard> getAll();
   void saveOrUpdate(HintsCard card);
+  HintsCard remove(String id);
 }
 
 /// Simple in-memory repo
@@ -41,5 +42,11 @@ class InMemoryCardsRepo implements CardsRepo {
     }
 
     _cardsMap.update(card.id, (c) => card, ifAbsent: () => card);
+  }
+
+  @override
+  HintsCard remove(String id) {
+
+    _cardsMap.remove(id);
   }
 }

@@ -76,17 +76,25 @@ class HintsCardsState extends State<HintsCards> {
 
   void _pushEditCard(HintsCard card) async {
 
-    final HintsCard newOrUpdatedCard = await Navigator.of(context).push(
+    final CardScreenResponse response = await Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => CardScreen(card))
     );
 
-    if (newOrUpdatedCard == null) {
-      print("No need to update card");
-      return; // no update
-    }
+    switch (response.action) {
 
-    print("Will save or update card: $newOrUpdatedCard");
-    _cardsRepo.saveOrUpdate(newOrUpdatedCard);
-    retrieveCards();
+      case CardScreenAction.update:
+        print("Creating or updating card ${response.card}");
+        _cardsRepo.saveOrUpdate(response.card);
+        retrieveCards();
+        break;
+      case CardScreenAction.delete:
+        print("Removing card ${response.card}");
+        _cardsRepo.remove(response.card.id);
+        retrieveCards();
+        break;
+      case CardScreenAction.nothing:
+        print("Nothing to do");
+        break;
+    }
   }
 }
