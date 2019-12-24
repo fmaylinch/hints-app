@@ -9,7 +9,8 @@ The app will show you one of the hints, and you have to remember the rest.
 - ✅ Create Flutter project
 - ✅ Configure iOS and Web
 - ✅ Functional app but data in stored in memory
-- ❌ Store data in a persistent database
+- ✅ Create server API
+- ✅ Connect to server API
 - ❌ Play (show hints randomly)
 - ❌ Search
 - ❌ Add users, login, security

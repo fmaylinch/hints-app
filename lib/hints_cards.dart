@@ -17,10 +17,22 @@ class HintsCardsState extends State<HintsCards> {
   List<HintsCard> _cards;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
 
+    _cards = [];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Inherited widgets can't be accessed from initState()
     _cardsRepo = ServicesWidget.of(context).cardsRepo;
     retrieveCards();
+  }
+
+  @override
+  Widget build(BuildContext context) {
 
     return Scaffold(
       appBar: AppBar(
@@ -34,7 +46,12 @@ class HintsCardsState extends State<HintsCards> {
   }
 
   void retrieveCards() {
-    _cards = _cardsRepo.getAll();
+    // TODO: We could use FutureBuilder
+    _cardsRepo.getAll().then((cards) {
+      this.setState(() {
+        _cards = cards;
+      });
+    });
   }
 
   _buildCardList() {
@@ -83,14 +100,16 @@ class HintsCardsState extends State<HintsCards> {
     switch (response.action) {
 
       case CardScreenAction.update:
-        print("Creating or updating card ${response.card}");
-        _cardsRepo.saveOrUpdate(response.card);
-        retrieveCards();
+        print("Creating or updating ${response.card}");
+        _cardsRepo.saveOrUpdate(response.card).then((card) {
+          retrieveCards();
+        });
         break;
       case CardScreenAction.delete:
-        print("Removing card ${response.card}");
-        _cardsRepo.remove(response.card.id);
-        retrieveCards();
+        print("Removing ${response.card}");
+        _cardsRepo.deleteOne(response.card.id).then((card) {
+          retrieveCards();
+        });
         break;
       case CardScreenAction.nothing:
         print("Nothing to do");

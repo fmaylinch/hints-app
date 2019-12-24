@@ -23,10 +23,7 @@ class CardScreen extends StatelessWidget {
         .toList();
     final newNotes = _notesController.text;
 
-    print("Card edited:");
-    print(" - Id: ${card.id}");
-    print(" - Hints: $newHints");
-    print(" - Notes: $newNotes");
+    //print("Card edited: $card");
 
     var newCard = HintsCard(id: card.id, hints: newHints, notes: newNotes);
 

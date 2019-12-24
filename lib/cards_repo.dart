@@ -5,9 +5,9 @@ import 'package:hints_app/hints_card.dart';
 
 abstract class CardsRepo {
 
-  List<HintsCard> getAll();
-  void saveOrUpdate(HintsCard card);
-  HintsCard remove(String id);
+  Future<List<HintsCard>> getAll();
+  Future<HintsCard> saveOrUpdate(HintsCard card);
+  Future<HintsCard> deleteOne(String id);
 }
 
 /// Simple in-memory repo
@@ -29,12 +29,11 @@ class InMemoryCardsRepo implements CardsRepo {
   }
 
   @override
-  List<HintsCard> getAll() {
-    return _cardsMap.values.toList();
-  }
+  Future<List<HintsCard>> getAll() =>
+    Future.value(_cardsMap.values.toList());
 
   @override
-  void saveOrUpdate(HintsCard card) {
+  Future<HintsCard> saveOrUpdate(HintsCard card) {
 
     if (card.id == null) {
       card.id = nextId.toString();
@@ -42,11 +41,11 @@ class InMemoryCardsRepo implements CardsRepo {
     }
 
     _cardsMap.update(card.id, (c) => card, ifAbsent: () => card);
+
+    return Future.value(card);
   }
 
   @override
-  HintsCard remove(String id) {
-
-    _cardsMap.remove(id);
-  }
+  Future<HintsCard> deleteOne(String id) =>
+    Future.value(_cardsMap.remove(id));
 }
