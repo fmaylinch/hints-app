@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hints_app/api_cards_repo.dart';
+import 'api_cards_repo.dart';
 import 'hints_cards.dart';
 import 'cards_repo.dart';
 

@@ -1,8 +1,7 @@
 import 'dart:convert';
-
-import 'package:hints_app/cards_repo.dart';
-import 'package:hints_app/hints_card.dart';
 import 'package:http/http.dart' as http;
+import 'cards_repo.dart';
+import 'hints_card.dart';
 
 class ApiCardsRepo implements CardsRepo {
 
@@ -11,7 +10,9 @@ class ApiCardsRepo implements CardsRepo {
   @override
   Future<List<HintsCard>> getAll() {
 
+    print("Loading cards...");
     return http.post('$_baseUrl/getAll').then((r) {
+      print("Cards loaded");
       return HintsCard.listFromJson(json.decode(r.body));
     });
   }

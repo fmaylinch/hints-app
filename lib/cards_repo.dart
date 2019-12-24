@@ -1,7 +1,5 @@
-
 import 'dart:collection';
-
-import 'package:hints_app/hints_card.dart';
+import 'hints_card.dart';
 
 abstract class CardsRepo {
 

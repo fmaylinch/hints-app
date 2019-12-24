@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:hints_app/card_screen.dart';
-import 'package:hints_app/cards_repo.dart';
-import 'package:hints_app/hints_card.dart';
-import 'package:hints_app/main.dart';
 import 'dart:math';
+import 'package:flutter/material.dart';
+import 'main.dart';
+import 'card_screen.dart';
+import 'cards_repo.dart';
+import 'hints_card.dart';
 
 class HintsCards extends StatefulWidget {
 
