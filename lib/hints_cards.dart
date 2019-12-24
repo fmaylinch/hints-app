@@ -41,7 +41,21 @@ class HintsCardsState extends State<HintsCards> {
           IconButton(icon: Icon(Icons.add), onPressed: () => _pushCreateCard())
         ],
       ),
-      body: _buildCardList(),
+      body: FutureBuilder(
+        future: _cardsRepo.getAll(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text("Error: ${snapshot.error}");
+          } else if (snapshot.hasData) {
+            return _buildCardList(snapshot.data);
+          } else {
+            return Padding(
+              padding: EdgeInsets.all(20),
+              child: Text("Loading cards...", style: TextStyle(fontSize: 20))
+            );
+          }
+        }
+      ),
     );
   }
 
@@ -54,19 +68,19 @@ class HintsCardsState extends State<HintsCards> {
     });
   }
 
-  _buildCardList() {
+  Widget _buildCardList(List<HintsCard> cards) {
     return ListView.builder(
         padding: const EdgeInsets.all(8),
-        itemCount: _cards.length,
+        itemCount: cards.length,
         itemBuilder: (context, index) {
-          return _buildItem(index);
+          return _buildItem(cards, index);
         }
     );
   }
 
-  Widget _buildItem(int index) {
+  Widget _buildItem(List<HintsCard> cards, int index) {
 
-    final card = _cards[index];
+    final card = cards[index];
 
     // TODO: How many items (hints) to display? How to display them?
     // For now, we display a maximum of 2 hints, horizontally.
