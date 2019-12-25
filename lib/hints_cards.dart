@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'main.dart';
@@ -14,21 +15,16 @@ class HintsCards extends StatefulWidget {
 class HintsCardsState extends State<HintsCards> {
 
   CardsRepo _cardsRepo;
-  List<HintsCard> _cards;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _cards = [];
-  }
+  StreamController<List<HintsCard>> _streamController;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Inherited widgets can't be accessed from initState()
-    _cardsRepo = ServicesWidget.of(context).cardsRepo;
-    retrieveCards();
+    if (_streamController == null) {
+      _streamController = StreamController();
+      _cardsRepo = ServicesWidget.of(context).cardsRepo;
+      retrieveCards("didChangeDependencies");
+    }
   }
 
   @override
@@ -41,8 +37,8 @@ class HintsCardsState extends State<HintsCards> {
           IconButton(icon: Icon(Icons.add), onPressed: () => _pushCreateCard())
         ],
       ),
-      body: FutureBuilder(
-        future: _cardsRepo.getAll(),
+      body: StreamBuilder(
+        stream: _streamController.stream,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Text("Error: ${snapshot.error}");
@@ -59,12 +55,10 @@ class HintsCardsState extends State<HintsCards> {
     );
   }
 
-  void retrieveCards() {
-    // TODO: We could use FutureBuilder
+  void retrieveCards(String reason) {
+    print("Loading cards because: $reason");
     _cardsRepo.getAll().then((cards) {
-      this.setState(() {
-        _cards = cards;
-      });
+      _streamController.add(cards);
     });
   }
 
@@ -116,13 +110,13 @@ class HintsCardsState extends State<HintsCards> {
       case CardScreenAction.update:
         print("Creating or updating ${response.card}");
         _cardsRepo.saveOrUpdate(response.card).then((card) {
-          retrieveCards();
+          retrieveCards("One was updated");
         });
         break;
       case CardScreenAction.delete:
         print("Removing ${response.card}");
         _cardsRepo.deleteOne(response.card.id).then((card) {
-          retrieveCards();
+          retrieveCards("One was deleted");
         });
         break;
       case CardScreenAction.nothing:
