@@ -7,10 +7,12 @@ import 'hints_card.dart';
 class CardScreen extends StatelessWidget {
 
   final HintsCard card;
+  final bool _newCard;
   final TextEditingController _hintsController;
   final TextEditingController _notesController;
 
   CardScreen(this.card) :
+        _newCard = card.id == null,
         _hintsController = TextEditingController(text: card.hints.join("\n")),
         _notesController = TextEditingController(text: card.notes);
 
@@ -45,14 +47,19 @@ class CardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    var actions = _newCard ? null
+        : <Widget>[
+            IconButton(
+                icon: Icon(Icons.delete), onPressed: () => _deleteCard(context))
+          ];
+
     return WillPopScope( // TODO: This disables swipe back https://github.com/flutter/flutter/issues/14203
       onWillPop: () async => _saveCardAndGoBack(context),
       child: Scaffold(
         appBar: AppBar(
             title: Text('Edit Card', style: TextStyle(fontSize: 30, color: Colors.white)),
-          actions: <Widget>[
-            IconButton(icon: Icon(Icons.delete), onPressed: () => _deleteCard(context))
-          ],
+          actions: actions,
         ),
         body: Container(
           child: ListView(
