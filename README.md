@@ -11,6 +11,8 @@ The app will show you one of the hints, and you have to remember the rest.
 - ✅ Functional app but data in stored in memory
 - ✅ Create server API
 - ✅ Connect to server API
+- ✅ Deploy flutter web app + server API
+- ✅ Automatize deployment
 - ❌ Play (show hints randomly)
 - ❌ Search
 - ❌ Add users, login, security

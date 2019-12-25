@@ -5,7 +5,13 @@ import 'hints_card.dart';
 
 class ApiCardsRepo implements CardsRepo {
 
-  String _baseUrl = 'http://localhost:8080/cards';
+  static bool _isProduction = const bool.fromEnvironment('dart.vm.product');
+  static String _apiRootUrl = _isProduction ? '/' : 'http://localhost:8090/';
+  static String _baseUrl = _apiRootUrl + 'cards';
+
+  ApiCardsRepo() {
+    print("baseUrl: $_baseUrl");
+  }
 
   @override
   Future<List<HintsCard>> getAll() {
