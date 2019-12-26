@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'card_view_screen.dart';
 import 'main.dart';
-import 'card_screen.dart';
+import 'card_edit_screen.dart';
 import 'cards_repo.dart';
 import 'hints_card.dart';
 
@@ -34,6 +35,7 @@ class HintsCardsState extends State<HintsCards> {
       appBar: AppBar(
         title: Text('All Cards', style: TextStyle(fontSize: 30, color: Colors.white)),
         actions: <Widget>[
+          IconButton(icon: Icon(Icons.play_arrow), onPressed: () => _playOneCard()),
           IconButton(icon: Icon(Icons.add), onPressed: () => _pushCreateCard())
         ],
       ),
@@ -95,6 +97,20 @@ class HintsCardsState extends State<HintsCards> {
 
   }
 
+  /// Plays one card - TODO: Play all the cards
+  void _playOneCard() async {
+
+    _cardsRepo.getAll().then((cards) {
+
+      final randomIndex = Random().nextInt(cards.length);
+
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => CardViewScreen(cards[randomIndex]))
+      );
+
+    });
+  }
+
   void _pushCreateCard() {
     _pushEditCard(HintsCard());
   }
@@ -102,7 +118,7 @@ class HintsCardsState extends State<HintsCards> {
   void _pushEditCard(HintsCard card) async {
 
     final CardScreenResponse response = await Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => CardScreen(card))
+        MaterialPageRoute(builder: (context) => CardEditScreen(card))
     );
 
     switch (response.action) {

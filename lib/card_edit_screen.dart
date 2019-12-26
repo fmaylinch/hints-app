@@ -3,15 +3,15 @@ import 'hints_card.dart';
 
 /// Edits a card, which may have empty data (in case it's a new card)
 /// It pops a CardScreenResponse with the card and action to do.
-/// In case the hints are not filled, the action is nothing.
-class CardScreen extends StatelessWidget {
+///
+class CardEditScreen extends StatelessWidget {
 
   final HintsCard card;
   final bool _newCard;
   final TextEditingController _hintsController;
   final TextEditingController _notesController;
 
-  CardScreen(this.card) :
+  CardEditScreen(this.card) :
         _newCard = card.id == null,
         _hintsController = TextEditingController(text: card.hints.join("\n")),
         _notesController = TextEditingController(text: card.notes);
