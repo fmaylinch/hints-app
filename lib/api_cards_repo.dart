@@ -19,14 +19,14 @@ class ApiCardsRepo implements CardsRepo {
     print("Loading cards...");
     return http.post('$_baseUrl/getAll').then((r) {
       print("Cards loaded");
-      return HintsCard.listFromJson(json.decode(r.body));
+      return HintsCard.listFromJson(decodeBody(r));
     });
   }
 
   @override
   Future<HintsCard> deleteOne(String id) {
     return http.post('$_baseUrl/deleteOne', body: id).then((r) {
-      return HintsCard.fromJson(json.decode(r.body));
+      return HintsCard.fromJson(decodeBody(r));
     });
   }
 
@@ -39,8 +39,10 @@ class ApiCardsRepo implements CardsRepo {
         headers: {"Content-Type": "application/json"},
         body: body
     ).then((r) {
-      return HintsCard.fromJson(json.decode(r.body));
+      return HintsCard.fromJson(decodeBody(r));
     });
   }
 
+  /// utf8.decode is needed for cyrillic - https://stackoverflow.com/a/51370010/1121497
+  decodeBody(http.Response r) => json.decode(utf8.decode(r.bodyBytes));
 }
