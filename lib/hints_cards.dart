@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'card_view_screen.dart';
@@ -16,20 +15,21 @@ class HintsCards extends StatefulWidget {
 class HintsCardsState extends State<HintsCards> {
 
   CardsRepo _cardsRepo;
-  StreamController<List<HintsCard>> _streamController;
+  List<HintsCard> _cards;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_streamController == null) {
-      _streamController = StreamController();
-      _cardsRepo = ServicesWidget.of(context).cardsRepo;
-      retrieveCards("didChangeDependencies");
-    }
+
+    _cardsRepo = ServicesWidget.of(context).cardsRepo;
   }
 
   @override
   Widget build(BuildContext context) {
+
+    if (_cards == null) {
+      retrieveCards("Cards are not loaded");
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -39,37 +39,33 @@ class HintsCardsState extends State<HintsCards> {
           IconButton(icon: Icon(Icons.add), onPressed: () => _pushCreateCard())
         ],
       ),
-      body: StreamBuilder(
-        stream: _streamController.stream,
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Text("Error: ${snapshot.error}");
-          } else if (snapshot.hasData) {
-            return _buildCardList(snapshot.data);
-          } else {
-            return Padding(
-              padding: EdgeInsets.all(20),
-              child: Text("Loading cards...", style: TextStyle(fontSize: 20))
-            );
-          }
-        }
-      ),
+      body: _buildCardList()
     );
   }
 
   void retrieveCards(String reason) {
     print("Loading cards because: $reason");
     _cardsRepo.getAll().then((cards) {
-      _streamController.add(cards);
+      setState(() {
+        _cards = cards;
+      });
     });
   }
 
-  Widget _buildCardList(List<HintsCard> cards) {
+  Widget _buildCardList() {
+
+    if (_cards == null) {
+      return Padding(
+          padding: EdgeInsets.all(20),
+          child: Text("Loading cards...", style: TextStyle(fontSize: 20))
+      );
+    }
+
     return ListView.builder(
         padding: const EdgeInsets.all(8),
-        itemCount: cards.length,
+        itemCount: _cards.length,
         itemBuilder: (context, index) {
-          return _buildItem(cards, index);
+          return _buildItem(_cards, index);
         }
     );
   }
@@ -100,15 +96,11 @@ class HintsCardsState extends State<HintsCards> {
   /// Plays one card - TODO: Play all the cards
   void _playOneCard() async {
 
-    _cardsRepo.getAll().then((cards) {
+    final randomIndex = Random().nextInt(_cards.length);
 
-      final randomIndex = Random().nextInt(cards.length);
-
-      Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => CardViewScreen(cards[randomIndex]))
-      );
-
-    });
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => CardViewScreen(_cards[randomIndex]))
+    );
   }
 
   void _pushCreateCard() {
