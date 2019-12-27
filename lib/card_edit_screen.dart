@@ -17,6 +17,7 @@ class CardEditScreen extends StatefulWidget {
 class _CardEditScreenState extends State<CardEditScreen> {
 
   bool _newCard;
+  int _score;
   TextEditingController _hintsController;
   TextEditingController _notesController;
 
@@ -25,6 +26,7 @@ class _CardEditScreenState extends State<CardEditScreen> {
     super.initState();
 
     _newCard = widget.card.id == null;
+    _score = widget.card.score;
     _hintsController = TextEditingController(text: widget.card.hints.join("\n"));
     _notesController = TextEditingController(text: widget.card.notes);
   }
@@ -49,11 +51,34 @@ class _CardEditScreenState extends State<CardEditScreen> {
           child: ListView(
             children: [
               _buildField(_hintsController, "Write hints, one per line"),
+              _buildRatingSlider(),
               _buildField(_notesController, "Write optional notes")
             ]
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRatingSlider() {
+
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: 10),
+          child: Text("How well you know this ($_score)", style: TextStyle(color: Colors.grey))
+        ),
+        Slider(
+          value: _score.toDouble(),
+          onChanged: (newValue) {
+            setState(() {
+              _score = newValue.round();
+            });
+          },
+          min: 0,
+          max: 100,
+        )
+      ],
     );
   }
 
@@ -68,7 +93,7 @@ class _CardEditScreenState extends State<CardEditScreen> {
 
     //print("Card edited: $card");
 
-    var newCard = HintsCard(id: widget.card.id, hints: newHints, notes: newNotes);
+    var newCard = HintsCard(id: widget.card.id, score: _score, hints: newHints, notes: newNotes);
 
     // Avoid saving incomplete or unmodified card
     var updateNeeded = newCard.hints.isNotEmpty && newCard != widget.card;

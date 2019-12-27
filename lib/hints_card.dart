@@ -2,10 +2,13 @@ import 'package:flutter/foundation.dart';
 
 class HintsCard {
 
+  static const defaultScore = 50;
+
   String id;
+  int score;
   List<String> hints;
   String notes;
-  HintsCard({this.id, this.hints = const [], this.notes});
+  HintsCard({this.id, this.score = defaultScore, this.hints = const [], this.notes});
 
 
   // -- equals, hashCode, toString ---
@@ -16,15 +19,16 @@ class HintsCard {
       other is HintsCard &&
           runtimeType == other.runtimeType &&
           id == other.id &&
+          score == other.score &&
           listEquals(hints, other.hints) && // https://stackoverflow.com/a/55974120/1121497
           notes == other.notes;
 
   @override
-  int get hashCode => id.hashCode ^ hints.hashCode ^ notes.hashCode;
+  int get hashCode => id.hashCode ^ score.hashCode ^ hints.hashCode ^ notes.hashCode;
 
   @override
   String toString() {
-    return 'HintsCard{id: $id, hints: $hints, notes: $notes}';
+    return 'HintsCard{id: $id, score: $score, hints: $hints, notes: $notes}';
   }
 
 
@@ -35,6 +39,7 @@ class HintsCard {
 
     return HintsCard(
       id: json['id'] as String,
+      score: json['score'] as int,
       hints: json['hints'].cast<String>(), // https://javiercbk.github.io/json_to_dart/
       notes: json['notes'] as String,
     );
@@ -50,6 +55,7 @@ class HintsCard {
 
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = card.id;
+    data['score'] = card.score;
     data['hints'] = card.hints;
     data['notes'] = card.notes;
     return data;
