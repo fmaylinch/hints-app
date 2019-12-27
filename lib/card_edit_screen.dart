@@ -4,46 +4,30 @@ import 'hints_card.dart';
 /// Edits a card, which may have empty data (in case it's a new card)
 /// It pops a CardScreenResponse with the card and action to do.
 ///
-class CardEditScreen extends StatelessWidget {
+class CardEditScreen extends StatefulWidget {
 
   final HintsCard card;
-  final bool _newCard;
-  final TextEditingController _hintsController;
-  final TextEditingController _notesController;
 
-  CardEditScreen(this.card) :
-        _newCard = card.id == null,
-        _hintsController = TextEditingController(text: card.hints.join("\n")),
-        _notesController = TextEditingController(text: card.notes);
+  CardEditScreen(this.card);
 
-  bool _saveCardAndGoBack(BuildContext context) {
+  @override
+  State<StatefulWidget> createState() => _CardEditScreenState();
+}
 
-    final newHints = _hintsController.text
-        .split("\n")
-        .map((x) => x.trim())
-        .where((x) => x.isNotEmpty)
-        .toList();
-    final newNotes = _notesController.text;
+class _CardEditScreenState extends State<CardEditScreen> {
 
-    //print("Card edited: $card");
+  bool _newCard;
+  TextEditingController _hintsController;
+  TextEditingController _notesController;
 
-    var newCard = HintsCard(id: card.id, hints: newHints, notes: newNotes);
+  @override
+  void initState() {
+    super.initState();
 
-    // Avoid saving incomplete or unmodified card
-    var updateNeeded = newCard.hints.isNotEmpty && newCard != card;
-
-    final CardScreenAction action = updateNeeded
-        ? CardScreenAction.update : CardScreenAction.nothing;
-
-    Navigator.pop(context, CardScreenResponse(newCard, action));
-
-    return false;
+    _newCard = widget.card.id == null;
+    _hintsController = TextEditingController(text: widget.card.hints.join("\n"));
+    _notesController = TextEditingController(text: widget.card.notes);
   }
-
-  _deleteCard(BuildContext context) {
-    Navigator.pop(context, CardScreenResponse(card, CardScreenAction.delete));
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +55,34 @@ class CardEditScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  bool _saveCardAndGoBack(BuildContext context) {
+
+    final newHints = _hintsController.text
+        .split("\n")
+        .map((x) => x.trim())
+        .where((x) => x.isNotEmpty)
+        .toList();
+    final newNotes = _notesController.text;
+
+    //print("Card edited: $card");
+
+    var newCard = HintsCard(id: widget.card.id, hints: newHints, notes: newNotes);
+
+    // Avoid saving incomplete or unmodified card
+    var updateNeeded = newCard.hints.isNotEmpty && newCard != widget.card;
+
+    final CardScreenAction action = updateNeeded
+        ? CardScreenAction.update : CardScreenAction.nothing;
+
+    Navigator.pop(context, CardScreenResponse(newCard, action));
+
+    return false;
+  }
+
+  _deleteCard(BuildContext context) {
+    Navigator.pop(context, CardScreenResponse(widget.card, CardScreenAction.delete));
   }
 
   _buildField(TextEditingController controller, String hintText) {
