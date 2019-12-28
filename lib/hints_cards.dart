@@ -82,15 +82,27 @@ class HintsCardsState extends State<HintsCards> {
         Text(it, style: TextStyle(fontSize: 20)))
         .toList();
 
-    return ListTile(
+    final colors = [
+      Colors.red[200], Colors.red[100],
+      Colors.orange[200], Colors.orange[100],
+      Colors.grey[200], Colors.white,
+      Colors.blue[100], Colors.blue[200],
+      Colors.green[100], Colors.green[200]
+    ];
 
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: hintWidgets,
-      ),
-      onTap: () => _pushEditCard(card),
+    final color = colors[min(card.score ~/ 10, 9)];
+
+    return Container(
+      decoration: BoxDecoration(color: color),
+      child: ListTile(
+          title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: hintWidgets
+          ),
+          onTap: () => _pushEditCard(card)
+
+      )
     );
-
   }
 
   /// Plays one card - TODO: Play all the cards
