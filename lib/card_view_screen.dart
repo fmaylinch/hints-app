@@ -52,7 +52,11 @@ class _CardViewScreenState extends State<CardViewScreen> {
 
     return Scaffold(
       appBar: AppBar(
-          title: Text('View Card', style: TextStyle(fontSize: 30, color: Colors.white))
+        title: Text('View Card', style: TextStyle(fontSize: 30, color: Colors.white)),
+        actions: <Widget>[
+          IconButton(
+              icon: Icon(Icons.edit), onPressed: () => _editCard())
+        ],
       ),
       body: Container(
         margin: EdgeInsets.all(10),
@@ -68,5 +72,21 @@ class _CardViewScreenState extends State<CardViewScreen> {
 
   Text _toWidget(String str) => Text(str, style: TextStyle(fontSize: 20));
 
+  _editCard() {
+    Navigator.pop(context, CardViewScreenResponse(widget.card, CardViewScreenAction.edit));
+  }
+}
+
+class CardViewScreenResponse {
+
+  final HintsCard card;
+  final CardViewScreenAction action;
+
+  CardViewScreenResponse(this.card, this.action);
+}
+
+// TODO: Add score slider and update action if slider is changed
+enum CardViewScreenAction {
+  edit, nothing
 }
 

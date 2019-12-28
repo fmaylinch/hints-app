@@ -37,11 +37,11 @@ class _CardEditScreenState extends State<CardEditScreen> {
     var actions = _newCard ? null
         : <Widget>[
             IconButton(
-                icon: Icon(Icons.delete), onPressed: () => _deleteCard(context))
+                icon: Icon(Icons.delete), onPressed: () => _deleteCard())
           ];
 
     return WillPopScope( // TODO: This disables swipe back https://github.com/flutter/flutter/issues/14203
-      onWillPop: () async => _saveCardAndGoBack(context),
+      onWillPop: () async => _saveCardAndGoBack(),
       child: Scaffold(
         appBar: AppBar(
             title: Text('Edit Card', style: TextStyle(fontSize: 30, color: Colors.white)),
@@ -82,7 +82,7 @@ class _CardEditScreenState extends State<CardEditScreen> {
     );
   }
 
-  bool _saveCardAndGoBack(BuildContext context) {
+  bool _saveCardAndGoBack() {
 
     final newHints = _hintsController.text
         .split("\n")
@@ -98,16 +98,16 @@ class _CardEditScreenState extends State<CardEditScreen> {
     // Avoid saving incomplete or unmodified card
     var updateNeeded = newCard.hints.isNotEmpty && newCard != widget.card;
 
-    final CardScreenAction action = updateNeeded
-        ? CardScreenAction.update : CardScreenAction.nothing;
+    final CardEditScreenAction action = updateNeeded
+        ? CardEditScreenAction.update : CardEditScreenAction.nothing;
 
-    Navigator.pop(context, CardScreenResponse(newCard, action));
+    Navigator.pop(context, CardEditScreenResponse(newCard, action));
 
     return false;
   }
 
-  _deleteCard(BuildContext context) {
-    Navigator.pop(context, CardScreenResponse(widget.card, CardScreenAction.delete));
+  _deleteCard() {
+    Navigator.pop(context, CardEditScreenResponse(widget.card, CardEditScreenAction.delete));
   }
 
   _buildField(TextEditingController controller, String hintText) {
@@ -123,15 +123,15 @@ class _CardEditScreenState extends State<CardEditScreen> {
   }
 }
 
-class CardScreenResponse {
+class CardEditScreenResponse {
 
   final HintsCard card;
-  final CardScreenAction action;
+  final CardEditScreenAction action;
 
-  CardScreenResponse(this.card, this.action);
+  CardEditScreenResponse(this.card, this.action);
 }
 
-enum CardScreenAction {
+enum CardEditScreenAction {
   update, delete, nothing
 }
 

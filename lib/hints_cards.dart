@@ -110,9 +110,18 @@ class HintsCardsState extends State<HintsCards> {
 
     final randomIndex = Random().nextInt(_cards.length);
 
-    await Navigator.of(context).push(
+    final CardViewScreenResponse response = await Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => CardViewScreen(_cards[randomIndex]))
     );
+
+    switch (response.action) {
+
+      case CardViewScreenAction.edit:
+        _pushEditCard(response.card);
+        break;
+      case CardViewScreenAction.nothing:
+        break;
+    }
   }
 
   void _pushCreateCard() {
@@ -121,25 +130,27 @@ class HintsCardsState extends State<HintsCards> {
 
   void _pushEditCard(HintsCard card) async {
 
-    final CardScreenResponse response = await Navigator.of(context).push(
+    final CardEditScreenResponse response = await Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => CardEditScreen(card))
     );
 
+    if (response == null) return;
+
     switch (response.action) {
 
-      case CardScreenAction.update:
+      case CardEditScreenAction.update:
         print("Creating or updating ${response.card}");
         _cardsRepo.saveOrUpdate(response.card).then((card) {
           retrieveCards("One was updated");
         });
         break;
-      case CardScreenAction.delete:
+      case CardEditScreenAction.delete:
         print("Removing ${response.card}");
         _cardsRepo.deleteOne(response.card.id).then((card) {
           retrieveCards("One was deleted");
         });
         break;
-      case CardScreenAction.nothing:
+      case CardEditScreenAction.nothing:
         print("Nothing to do");
         break;
     }
