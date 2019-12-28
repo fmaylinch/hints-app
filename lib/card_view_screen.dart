@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'score_slider.dart';
 import 'hints_card.dart';
 
 /// Views a card, first showing one of the hints,
@@ -20,6 +21,15 @@ class _CardViewScreenState extends State<CardViewScreen> {
 
   TextEditingController _answerCtrl = TextEditingController();
   bool _revealed = false;
+  int _score;
+
+
+  @override
+  void initState() {
+    super.initState();
+
+    _score = widget.card.score;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,27 +56,36 @@ class _CardViewScreenState extends State<CardViewScreen> {
 
     final randomHintIndex = Random().nextInt(widget.card.hints.length);
 
+    var slider = ScoreSlider(score: _score, onChanged: (newValue) =>
+        setState(() {
+          _score = newValue.round();
+        })
+    );
+
     final widgets = _revealed ?
-      [answer, ...widget.card.hints.map(_toWidget).toList(), _toWidget(widget.card.notes)]
+      [answer, ...widget.card.hints.map(_toWidget).toList(), slider, _toWidget(widget.card.notes)]
         : [_toWidget("Hint: ${widget.card.hints[randomHintIndex]}"), answer, revealButton];
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('View Card', style: TextStyle(fontSize: 30, color: Colors.white)),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.edit), onPressed: () => _editCard())
-        ],
-      ),
-      body: Container(
-        margin: EdgeInsets.all(10),
-        child: ListView(
-            children: widgets.map((w) => Container(
-              child: w,
-              margin: EdgeInsets.all(10),
-            )).toList()
+    return WillPopScope(
+      onWillPop: () async => _saveCardAndGoBack(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('View Card', style: TextStyle(fontSize: 30, color: Colors.white)),
+          actions: <Widget>[
+            IconButton(
+                icon: Icon(Icons.edit), onPressed: () => _editCard())
+          ],
         ),
-      ),
+        body: Container(
+          margin: EdgeInsets.all(10),
+          child: ListView(
+              children: widgets.map((w) => Container(
+                child: w,
+                margin: EdgeInsets.all(10),
+              )).toList()
+          ),
+        ),
+      )
     );
   }
 
@@ -75,6 +94,20 @@ class _CardViewScreenState extends State<CardViewScreen> {
   _editCard() {
     Navigator.pop(context, CardViewScreenResponse(widget.card, CardViewScreenAction.edit));
   }
+
+  bool _saveCardAndGoBack() {
+
+    var updateNeeded = _score != widget.card.score;
+    widget.card.score = _score;
+
+    final CardViewScreenAction action = updateNeeded
+        ? CardViewScreenAction.update : CardViewScreenAction.nothing;
+
+    Navigator.pop(context, CardViewScreenResponse(widget.card, action));
+
+    return false;
+  }
+
 }
 
 class CardViewScreenResponse {
@@ -87,6 +120,6 @@ class CardViewScreenResponse {
 
 // TODO: Add score slider and update action if slider is changed
 enum CardViewScreenAction {
-  edit, nothing
+  edit, update, nothing
 }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'score_slider.dart';
 import 'hints_card.dart';
 
 /// Edits a card, which may have empty data (in case it's a new card)
@@ -62,23 +63,10 @@ class _CardEditScreenState extends State<CardEditScreen> {
 
   Widget _buildRatingSlider() {
 
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 10),
-          child: Text("How well you know this ($_score)", style: TextStyle(color: Colors.grey))
-        ),
-        Slider(
-          value: _score.toDouble(),
-          onChanged: (newValue) {
-            setState(() {
-              _score = newValue.round();
-            });
-          },
-          min: 0,
-          max: 100,
-        )
-      ],
+    return ScoreSlider(score: _score, onChanged: (newValue) =>
+      setState(() {
+        _score = newValue.round();
+      })
     );
   }
 

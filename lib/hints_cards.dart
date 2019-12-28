@@ -119,6 +119,12 @@ class HintsCardsState extends State<HintsCards> {
       case CardViewScreenAction.edit:
         _pushEditCard(response.card);
         break;
+      case CardViewScreenAction.update:
+        print("Updating ${response.card}");
+        _cardsRepo.saveOrUpdate(response.card).then((card) {
+          retrieveCards("One was updated");
+        });
+        break;
       case CardViewScreenAction.nothing:
         break;
     }
