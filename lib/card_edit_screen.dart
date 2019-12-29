@@ -41,11 +41,13 @@ class _CardEditScreenState extends State<CardEditScreen> {
                 icon: Icon(Icons.delete), onPressed: () => _deleteCard())
           ];
 
+    var title = _newCard ? 'New Card' :  'Edit Card';
+
     return WillPopScope( // TODO: This disables swipe back https://github.com/flutter/flutter/issues/14203
       onWillPop: () async => _saveCardAndGoBack(),
       child: Scaffold(
         appBar: AppBar(
-            title: Text('Edit Card', style: TextStyle(fontSize: 30, color: Colors.white)),
+            title: Text(title, style: TextStyle(fontSize: 30, color: Colors.white)),
           actions: actions,
         ),
         body: Container(
