@@ -15,13 +15,34 @@ class HintsCards extends StatefulWidget {
 class HintsCardsState extends State<HintsCards> {
 
   CardsRepo _cardsRepo;
+  List<HintsCard> _allCards;
   List<HintsCard> _cards;
+  TextEditingController _searchCtrl;
+  ValueChanged<String> _onSearchChanged;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     _cardsRepo = ServicesWidget.of(context).cardsRepo;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _searchCtrl = TextEditingController();
+    _onSearchChanged = (query) {
+      setState(() {
+        if (query.isEmpty) {
+          _cards = _allCards;
+        } else {
+          _cards = _allCards.where((c) =>
+              c.rawContent.contains(query.toLowerCase())
+          ).toList();
+        }
+      });
+    };
   }
 
   @override
@@ -39,7 +60,12 @@ class HintsCardsState extends State<HintsCards> {
           IconButton(icon: Icon(Icons.add), onPressed: () => _pushCreateCard())
         ],
       ),
-      body: _buildCardList()
+      body: Column(
+        children: <Widget>[
+          SearchBar(_searchCtrl, _onSearchChanged),
+          Expanded(child: _buildCardList())
+        ],
+      )
     );
   }
 
@@ -47,6 +73,8 @@ class HintsCardsState extends State<HintsCards> {
     print("Loading cards because: $reason");
     _cardsRepo.getAll().then((cards) {
       setState(() {
+        _searchCtrl.text = "";
+        _allCards = cards;
         _cards = cards;
       });
     });
@@ -160,5 +188,26 @@ class HintsCardsState extends State<HintsCards> {
         print("Nothing to do");
         break;
     }
+  }
+}
+
+class SearchBar extends StatelessWidget {
+
+  TextEditingController ctrl;
+  ValueChanged<String> onChanged;
+
+  SearchBar(this.ctrl, this.onChanged);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(10),
+      child: TextFormField(
+        decoration: InputDecoration(hintText: "Search..."),
+        style: TextStyle(fontSize: 20),
+        controller: ctrl,
+        onChanged: onChanged,
+      )
+    );
   }
 }

@@ -8,7 +8,11 @@ class HintsCard {
   int score;
   List<String> hints;
   String notes;
-  HintsCard({this.id, this.score = defaultScore, this.hints = const [], this.notes});
+  String rawContent;
+
+  HintsCard({this.id, this.score = defaultScore, this.hints = const [], this.notes}) {
+    rawContent = (this.hints.join(", ") + (notes != null ? ", " + notes : "")).toLowerCase();
+  }
 
 
   // -- equals, hashCode, toString ---
