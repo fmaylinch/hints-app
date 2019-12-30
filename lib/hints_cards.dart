@@ -18,7 +18,8 @@ class HintsCardsState extends State<HintsCards> {
   List<HintsCard> _allCards;
   List<HintsCard> _cards;
   TextEditingController _searchCtrl;
-  bool _cardsSortedByFirstHint = true; // Default sort
+  static _CardSortType _defaultApiOrder = _CardSortType.hint0;
+  _CardSortType _cardsSortType = _defaultApiOrder; // Default sort from API
 
   /// Used to display SnackBar
   /// https://medium.com/@ksheremet/flutter-snackbar-3a817635aeb2
@@ -45,7 +46,14 @@ class HintsCardsState extends State<HintsCards> {
       retrieveCards("Cards are not loaded");
     }
 
-    var sortIcon = _cardsSortedByFirstHint ? Icon(Icons.arrow_back) : Icon(Icons.arrow_forward);
+    var sortIcon = (() {
+      switch(_cardsSortType) {
+        case _CardSortType.hint0: return Icon(Icons.arrow_back);
+        case _CardSortType.hint1: return Icon(Icons.arrow_forward);
+        case _CardSortType.score: return Icon(Icons.score);
+        default: throw "Unexpected type $_cardsSortType";
+      }
+    })();
 
     return Scaffold(
       key: _scaffoldKey,
@@ -88,7 +96,7 @@ class HintsCardsState extends State<HintsCards> {
         _searchCtrl.text = "";
         _allCards = cards;
         _cards = cards;
-        _cardsSortedByFirstHint = true; // We suppose this is the default order
+        _cardsSortType = _defaultApiOrder;
       });
     });
   }
@@ -148,7 +156,7 @@ class HintsCardsState extends State<HintsCards> {
     );
   }
 
-  /// Switches between sort by hints[0] and hints[1]
+  /// Sorts cards and optionally switches between different sort ways
   void _sortCards({bool swapSort = false}) {
 
     print("Sorting cards (swapSort = $swapSort)");
@@ -156,14 +164,21 @@ class HintsCardsState extends State<HintsCards> {
     setState(() {
 
       if (swapSort) {
-        _cardsSortedByFirstHint = !_cardsSortedByFirstHint;
-        _showSnackBar("Sort by hint " + (_cardsSortedByFirstHint ? "1" : "2"));
+        // Select next type
+        _cardsSortType = _CardSortType.values[(_cardsSortType.index + 1) % _CardSortType.values.length];
+        _showSnackBar("Sort by $_cardsSortType");
       }
 
-      if (_cardsSortedByFirstHint) {
-        _allCards.sort((a,b) => a.allContentLower.compareTo(b.allContentLower));
-      } else {
-        _allCards.sort((a,b) => a.hint1Lower.compareTo(b.hint1Lower));
+      switch (_cardsSortType) {
+        case _CardSortType.hint0:
+          _allCards.sort((a,b) => a.allContentLower.compareTo(b.allContentLower));
+          break;
+        case _CardSortType.hint1:
+          _allCards.sort((a,b) => a.hint1Lower.compareTo(b.hint1Lower));
+          break;
+        case _CardSortType.score:
+          _allCards.sort((a,b) => a.score.compareTo(b.score));
+          break;
       }
     });
 
@@ -193,9 +208,10 @@ class HintsCardsState extends State<HintsCards> {
         _cardsRepo.saveOrUpdate(response.card).then((card) {
 
           // retrieveCards("One was updated");
-          // No need to update cards, just the score was updated
-
+          // Instead of retrieving cards, we just sort the list
           _showSnackBar("Updated score: ${response.card.hints[0]} (${response.card.score})");
+          _sortCards();
+
         });
         break;
       case CardViewScreenAction.nothing:
@@ -320,4 +336,8 @@ class SearchBar extends StatelessWidget {
       child: Row(children: children)
     );
   }
+}
+
+enum _CardSortType {
+  hint0, hint1, score
 }
