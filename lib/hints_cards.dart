@@ -193,21 +193,45 @@ class HintsCardsState extends State<HintsCards> {
 
 class SearchBar extends StatelessWidget {
 
-  TextEditingController ctrl;
-  ValueChanged<String> onChanged;
+  final TextEditingController ctrl;
+  final ValueChanged<String> onChanged;
 
   SearchBar(this.ctrl, this.onChanged);
 
   @override
   Widget build(BuildContext context) {
+
+    var children = <Widget>[
+      Expanded(
+        child: TextField(
+          decoration: InputDecoration(
+              hintText: "Search...",
+              prefixIcon: Icon(Icons.search)
+          ),
+          style: TextStyle(fontSize: 20),
+          controller: ctrl,
+          onChanged: onChanged,
+        ),
+      )
+    ];
+
+    // Add cancel button to remove search text
+    if (ctrl.text.isNotEmpty) {
+      children.add(Container(
+        padding: EdgeInsets.only(left: 10),
+        child: GestureDetector(
+          child: Icon(Icons.cancel),
+          onTap: () {
+            ctrl.text = "";
+            onChanged("");
+          },
+        )
+      ));
+    }
+
     return Container(
       padding: EdgeInsets.all(10),
-      child: TextFormField(
-        decoration: InputDecoration(hintText: "Search..."),
-        style: TextStyle(fontSize: 20),
-        controller: ctrl,
-        onChanged: onChanged,
-      )
+      child: Row(children: children)
     );
   }
 }
