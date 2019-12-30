@@ -18,8 +18,7 @@ class HintsCardsState extends State<HintsCards> {
   List<HintsCard> _allCards;
   List<HintsCard> _cards;
   TextEditingController _searchCtrl;
-  static _CardSortType _defaultApiOrder = _CardSortType.hint0;
-  _CardSortType _cardsSortType = _defaultApiOrder; // Default sort from API
+  _CardSortType _cardsSortType = _CardSortTypeExt.apiDefault();
 
   /// Used to display SnackBar
   /// https://medium.com/@ksheremet/flutter-snackbar-3a817635aeb2
@@ -46,21 +45,12 @@ class HintsCardsState extends State<HintsCards> {
       retrieveCards("Cards are not loaded");
     }
 
-    var sortIcon = (() {
-      switch(_cardsSortType) {
-        case _CardSortType.hint0: return Icon(Icons.arrow_back);
-        case _CardSortType.hint1: return Icon(Icons.arrow_forward);
-        case _CardSortType.score: return Icon(Icons.score);
-        default: throw "Unexpected type $_cardsSortType";
-      }
-    })();
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         title: Text('All Cards', style: TextStyle(fontSize: 30, color: Colors.white)),
         actions: <Widget>[
-          IconButton(icon: sortIcon, onPressed: () => _sortCards(swapSort: true)),
+          IconButton(icon: _cardsSortType.icon(), onPressed: () => _sortCards(changeSortType: true)),
           IconButton(icon: Icon(Icons.play_arrow), onPressed: () => _playOneCard()),
           IconButton(icon: Icon(Icons.add), onPressed: () => _pushCreateCard())
         ],
@@ -96,7 +86,7 @@ class HintsCardsState extends State<HintsCards> {
         _searchCtrl.text = "";
         _allCards = cards;
         _cards = cards;
-        _cardsSortType = _defaultApiOrder;
+        _cardsSortType = _CardSortTypeExt.apiDefault();
       });
     });
   }
@@ -156,30 +146,20 @@ class HintsCardsState extends State<HintsCards> {
     );
   }
 
-  /// Sorts cards and optionally switches between different sort ways
-  void _sortCards({bool swapSort = false}) {
+  /// Sorts cards (optionally changes to the next sort type)
+  void _sortCards({bool changeSortType = false}) {
 
-    print("Sorting cards (swapSort = $swapSort)");
+    print("Sorting cards (changeSortType = $changeSortType)");
 
     setState(() {
 
-      if (swapSort) {
+      if (changeSortType) {
         // Select next type
-        _cardsSortType = _CardSortType.values[(_cardsSortType.index + 1) % _CardSortType.values.length];
-        _showSnackBar("Sort by $_cardsSortType");
+        _cardsSortType = _cardsSortType.next();
+        _showSnackBar("Sort by ${_cardsSortType.message()}");
       }
 
-      switch (_cardsSortType) {
-        case _CardSortType.hint0:
-          _allCards.sort((a,b) => a.allContentLower.compareTo(b.allContentLower));
-          break;
-        case _CardSortType.hint1:
-          _allCards.sort((a,b) => a.hint1Lower.compareTo(b.hint1Lower));
-          break;
-        case _CardSortType.score:
-          _allCards.sort((a,b) => a.score.compareTo(b.score));
-          break;
-      }
+      _allCards.sort(_cardsSortType.sortFunction());
     });
 
     _filterCardsBySearchQuery(); // Refresh search
@@ -340,4 +320,43 @@ class SearchBar extends StatelessWidget {
 
 enum _CardSortType {
   hint0, hint1, score
+}
+
+extension _CardSortTypeExt on _CardSortType {
+
+  String message() {
+    switch (this) {
+      case _CardSortType.hint0: return "first hint";
+      case _CardSortType.hint1: return "second hint";
+      case _CardSortType.score: return "score";
+    }
+  }
+
+  /// Returns next type (or the first one if there are no more)
+  _CardSortType next() {
+    return _CardSortType.values[(index + 1) % _CardSortType.values.length];
+  }
+
+  Icon icon() {
+    switch(this) {
+      case _CardSortType.hint0: return Icon(Icons.arrow_back);
+      case _CardSortType.hint1: return Icon(Icons.arrow_forward);
+      case _CardSortType.score: return Icon(Icons.score);
+    }
+  }
+
+  static _CardSortType apiDefault() {
+    return _CardSortType.hint0;
+  }
+
+  int Function(HintsCard a, HintsCard b) sortFunction() {
+    switch (this) {
+      case _CardSortType.hint0:
+        return (a,b) => a.allContentLower.compareTo(b.allContentLower);
+      case _CardSortType.hint1:
+        return (a,b) => a.hint1Lower.compareTo(b.hint1Lower);
+      case _CardSortType.score:
+        return (a,b) => a.score.compareTo(b.score);
+    }
+  }
 }
