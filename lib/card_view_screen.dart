@@ -101,7 +101,7 @@ class _CardViewScreenState extends State<CardViewScreen> {
     widget.card.score = _score;
 
     final CardViewScreenAction action = updateNeeded
-        ? CardViewScreenAction.update : CardViewScreenAction.nothing;
+        ? CardViewScreenAction.updateScore : CardViewScreenAction.nothing;
 
     Navigator.pop(context, CardViewScreenResponse(widget.card, action));
 
@@ -118,8 +118,7 @@ class CardViewScreenResponse {
   CardViewScreenResponse(this.card, this.action);
 }
 
-// TODO: Add score slider and update action if slider is changed
 enum CardViewScreenAction {
-  edit, update, nothing
+  edit, updateScore, nothing
 }
 

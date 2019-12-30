@@ -20,6 +20,10 @@ class HintsCardsState extends State<HintsCards> {
   TextEditingController _searchCtrl;
   bool _cardsSortedByFirstHint = true; // Default sort
 
+  /// Used to display SnackBar
+  /// https://medium.com/@ksheremet/flutter-snackbar-3a817635aeb2
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -44,6 +48,7 @@ class HintsCardsState extends State<HintsCards> {
     var sortIcon = _cardsSortedByFirstHint ? Icon(Icons.arrow_back) : Icon(Icons.arrow_forward);
 
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('All Cards', style: TextStyle(fontSize: 30, color: Colors.white)),
         actions: <Widget>[
@@ -152,6 +157,7 @@ class HintsCardsState extends State<HintsCards> {
 
       if (swapSort) {
         _cardsSortedByFirstHint = !_cardsSortedByFirstHint;
+        _showSnackBar("Sort by hint " + (_cardsSortedByFirstHint ? "1" : "2"));
       }
 
       if (_cardsSortedByFirstHint) {
@@ -180,10 +186,16 @@ class HintsCardsState extends State<HintsCards> {
       case CardViewScreenAction.edit:
         _pushEditCard(response.card);
         break;
-      case CardViewScreenAction.update:
+      case CardViewScreenAction.updateScore:
+
         print("Updating ${response.card}");
+
         _cardsRepo.saveOrUpdate(response.card).then((card) {
-          retrieveCards("One was updated");
+
+          // retrieveCards("One was updated");
+          // No need to update cards, just the score was updated
+
+          _showSnackBar("Updated score: ${response.card.hints[0]} (${response.card.score})");
         });
         break;
       case CardViewScreenAction.nothing:
@@ -207,14 +219,16 @@ class HintsCardsState extends State<HintsCards> {
 
       case CardEditScreenAction.update:
 
-        var updating = response.card.isPersisted();
-        var action = updating ? "Updating" : "Creating";
+        print("Updating or creating ${response.card}");
 
-        print("$action ${response.card}");
         _cardsRepo.saveOrUpdate(response.card).then((card) {
 
           // retrieveCards("One was updated");
           // Instead of retrieving cards, we update and sort the list
+
+          var updating = response.card.isPersisted();
+          var action = updating ? "Updated" : "Created";
+          _showSnackBar("$action: ${card.hints[0]}");
 
           if (updating) {
             _allCards[_indexOfId(card.id)] = card;
@@ -233,6 +247,7 @@ class HintsCardsState extends State<HintsCards> {
 
           // retrieveCards("One was deleted");
           // Instead of retrieving cards, we remove the card and sort the list
+          _showSnackBar("Removed: ${card.hints[0]}");
           _allCards.removeAt(_indexOfId(card.id));
           _sortCards();
 
@@ -240,7 +255,8 @@ class HintsCardsState extends State<HintsCards> {
         break;
 
       case CardEditScreenAction.nothing:
-        print("Nothing to do");
+
+        // _showSnackBar("Nothing to do");
         break;
     }
   }
@@ -248,6 +264,17 @@ class HintsCardsState extends State<HintsCards> {
   /// Finds the card that has the given id and returns its index
   /// Note: We can't use the index of _buildItem, since we might be filtering
   int _indexOfId(String id) => _allCards.indexWhere((c) => c.id == id);
+
+  void _showSnackBar(String message) {
+
+    // Don't wait for previous snackbar to be hidden
+    _scaffoldKey.currentState.removeCurrentSnackBar();
+
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text(message, style: TextStyle(fontSize: 20)),
+      duration: Duration(seconds: 3)
+    ));
+  }
 }
 
 class SearchBar extends StatelessWidget {
