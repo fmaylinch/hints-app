@@ -17,7 +17,6 @@ class CardEditScreen extends StatefulWidget {
 
 class _CardEditScreenState extends State<CardEditScreen> {
 
-  bool _newCard;
   int _score;
   TextEditingController _hintsController;
   TextEditingController _notesController;
@@ -26,7 +25,6 @@ class _CardEditScreenState extends State<CardEditScreen> {
   void initState() {
     super.initState();
 
-    _newCard = widget.card.id == null;
     _score = widget.card.score;
     _hintsController = TextEditingController(text: widget.card.hints.join("\n"));
     _notesController = TextEditingController(text: widget.card.notes);
@@ -35,13 +33,14 @@ class _CardEditScreenState extends State<CardEditScreen> {
   @override
   Widget build(BuildContext context) {
 
-    var actions = _newCard ? null
-        : <Widget>[
+    var actions = widget.card.isPersisted()
+        ? <Widget>[
             IconButton(
                 icon: Icon(Icons.delete), onPressed: () => _deleteCard())
-          ];
+          ]
+        : null;
 
-    var title = _newCard ? 'New Card' :  'Edit Card';
+    var title = widget.card.isPersisted() ? 'Edit Card' : 'New Card';
 
     return WillPopScope( // TODO: This disables swipe back https://github.com/flutter/flutter/issues/14203
       onWillPop: () async => _saveCardAndGoBack(),

@@ -47,7 +47,7 @@ class HintsCardsState extends State<HintsCards> {
       appBar: AppBar(
         title: Text('All Cards', style: TextStyle(fontSize: 30, color: Colors.white)),
         actions: <Widget>[
-          IconButton(icon: sortIcon, onPressed: () => _switchSort()),
+          IconButton(icon: sortIcon, onPressed: () => _sortCards(swapSort: true)),
           IconButton(icon: Icon(Icons.play_arrow), onPressed: () => _playOneCard()),
           IconButton(icon: Icon(Icons.add), onPressed: () => _pushCreateCard())
         ],
@@ -144,22 +144,27 @@ class HintsCardsState extends State<HintsCards> {
   }
 
   /// Switches between sort by hints[0] and hints[1]
-  void _switchSort() {
+  void _sortCards({bool swapSort = false}) {
+
+    print("Sorting cards (swapSort = $swapSort)");
 
     setState(() {
-      if (_cardsSortedByFirstHint) {
-        _allCards.sort((a,b) => a.hint1Lower.compareTo(b.hint1Lower));
-      } else {
-        _allCards.sort((a,b) => a.allContentLower.compareTo(b.allContentLower));
+
+      if (swapSort) {
+        _cardsSortedByFirstHint = !_cardsSortedByFirstHint;
       }
 
-      _cardsSortedByFirstHint = !_cardsSortedByFirstHint;
+      if (_cardsSortedByFirstHint) {
+        _allCards.sort((a,b) => a.allContentLower.compareTo(b.allContentLower));
+      } else {
+        _allCards.sort((a,b) => a.hint1Lower.compareTo(b.hint1Lower));
+      }
     });
 
-    _filterCardsBySearchQuery();
+    _filterCardsBySearchQuery(); // Refresh search
   }
 
-  /// Plays one card - TODO: Play all the cards
+  /// Plays one random card - TODO: Play all the cards
   void _playOneCard() async {
 
     if (_cardsNotLoaded()) return;
@@ -201,22 +206,48 @@ class HintsCardsState extends State<HintsCards> {
     switch (response.action) {
 
       case CardEditScreenAction.update:
-        print("Creating or updating ${response.card}");
+
+        var updating = response.card.isPersisted();
+        var action = updating ? "Updating" : "Creating";
+
+        print("$action ${response.card}");
         _cardsRepo.saveOrUpdate(response.card).then((card) {
-          retrieveCards("One was updated");
+
+          // retrieveCards("One was updated");
+          // Instead of retrieving cards, we update and sort the list
+
+          if (updating) {
+            _allCards[_indexOfId(card.id)] = card;
+          } else {
+            _allCards.add(card);
+          }
+          _sortCards();
+
         });
         break;
+
       case CardEditScreenAction.delete:
+
         print("Removing ${response.card}");
         _cardsRepo.deleteOne(response.card.id).then((card) {
-          retrieveCards("One was deleted");
+
+          // retrieveCards("One was deleted");
+          // Instead of retrieving cards, we remove the card and sort the list
+          _allCards.removeAt(_indexOfId(card.id));
+          _sortCards();
+
         });
         break;
+
       case CardEditScreenAction.nothing:
         print("Nothing to do");
         break;
     }
   }
+
+  /// Finds the card that has the given id and returns its index
+  /// Note: We can't use the index of _buildItem, since we might be filtering
+  int _indexOfId(String id) => _allCards.indexWhere((c) => c.id == id);
 }
 
 class SearchBar extends StatelessWidget {

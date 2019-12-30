@@ -21,6 +21,8 @@ class HintsCard {
   }
 
 
+  bool isPersisted() => id != null;
+
   // -- equals, hashCode, toString ---
 
   @override
