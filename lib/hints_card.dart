@@ -8,10 +8,16 @@ class HintsCard {
   int score;
   List<String> hints;
   String notes;
-  String rawContent;
+
+  // --- data calculated locally --- //
+  /// All hints and notes together, in lower case, useful for searching/sorting
+  String allContentLower;
+  /// hints[1] in lower case (by default ""), useful for sorting
+  String hint1Lower;
 
   HintsCard({this.id, this.score = defaultScore, this.hints = const [], this.notes}) {
-    rawContent = (this.hints.join(", ") + (notes != null ? ", " + notes : "")).toLowerCase();
+    allContentLower = (hints.join(", ") + (notes != null ? ", " + notes : "")).toLowerCase();
+    hint1Lower = hints.length > 1 ? hints[1].toLowerCase() : "";
   }
 
 

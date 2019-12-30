@@ -18,7 +18,7 @@ class HintsCardsState extends State<HintsCards> {
   List<HintsCard> _allCards;
   List<HintsCard> _cards;
   TextEditingController _searchCtrl;
-  ValueChanged<String> _onSearchChanged;
+  bool _cardsSortedByFirstHint = true; // Default sort
 
   @override
   void didChangeDependencies() {
@@ -32,17 +32,6 @@ class HintsCardsState extends State<HintsCards> {
     super.initState();
 
     _searchCtrl = TextEditingController();
-    _onSearchChanged = (query) {
-      setState(() {
-        if (query.isEmpty) {
-          _cards = _allCards;
-        } else {
-          _cards = _allCards.where((c) =>
-              c.rawContent.contains(query.toLowerCase())
-          ).toList();
-        }
-      });
-    };
   }
 
   @override
@@ -52,21 +41,39 @@ class HintsCardsState extends State<HintsCards> {
       retrieveCards("Cards are not loaded");
     }
 
+    var sortIcon = _cardsSortedByFirstHint ? Icon(Icons.arrow_back) : Icon(Icons.arrow_forward);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('All Cards', style: TextStyle(fontSize: 30, color: Colors.white)),
         actions: <Widget>[
+          IconButton(icon: sortIcon, onPressed: () => _switchSort()),
           IconButton(icon: Icon(Icons.play_arrow), onPressed: () => _playOneCard()),
           IconButton(icon: Icon(Icons.add), onPressed: () => _pushCreateCard())
         ],
       ),
       body: Column(
         children: <Widget>[
-          SearchBar(_searchCtrl, _onSearchChanged),
+          SearchBar(_searchCtrl, (q) => _filterCardsBySearchQuery()),
           Expanded(child: _buildCardList())
         ],
       )
     );
+  }
+
+  void _filterCardsBySearchQuery() {
+
+    setState(() {
+      var query = _searchCtrl.text;
+      print("Search query: $query");
+      if (query.isEmpty) {
+        _cards = _allCards;
+      } else {
+        _cards = _allCards.where((c) =>
+            c.allContentLower.contains(query.toLowerCase())
+        ).toList();
+      }
+    });
   }
 
   void retrieveCards(String reason) {
@@ -76,9 +83,12 @@ class HintsCardsState extends State<HintsCards> {
         _searchCtrl.text = "";
         _allCards = cards;
         _cards = cards;
+        _cardsSortedByFirstHint = true; // We suppose this is the default order
       });
     });
   }
+
+  bool _cardsNotLoaded() => _cards == null;
 
   Widget _buildCardList() {
 
@@ -133,8 +143,26 @@ class HintsCardsState extends State<HintsCards> {
     );
   }
 
+  /// Switches between sort by hints[0] and hints[1]
+  void _switchSort() {
+
+    setState(() {
+      if (_cardsSortedByFirstHint) {
+        _allCards.sort((a,b) => a.hint1Lower.compareTo(b.hint1Lower));
+      } else {
+        _allCards.sort((a,b) => a.allContentLower.compareTo(b.allContentLower));
+      }
+
+      _cardsSortedByFirstHint = !_cardsSortedByFirstHint;
+    });
+
+    _filterCardsBySearchQuery();
+  }
+
   /// Plays one card - TODO: Play all the cards
   void _playOneCard() async {
+
+    if (_cardsNotLoaded()) return;
 
     final randomIndex = Random().nextInt(_cards.length);
 
@@ -210,7 +238,7 @@ class SearchBar extends StatelessWidget {
           ),
           style: TextStyle(fontSize: 20),
           controller: ctrl,
-          onChanged: onChanged,
+          onChanged: onChanged
         ),
       )
     ];
