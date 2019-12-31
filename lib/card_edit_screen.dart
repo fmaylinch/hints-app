@@ -76,15 +76,12 @@ class _CardEditScreenState extends State<CardEditScreen> {
 
   bool _saveCardAndGoBack() {
 
-
-    //print("Card edited: $card");
-
     var newCard = HintsCard(
         id: widget.card.id,
         score: _score,
         hints: _hintsController.text.split("\n").map((x) => x.trim()).where(_notEmpty).toList(),
         notes: _notesController.text,
-        tags: _tagsController.text.split(new RegExp(r"[\s,]+")).where(_notEmpty).toList());
+        tags: _tagsController.text.toLowerCase().split(new RegExp(r"[\s,]+")).where(_notEmpty).toList());
 
     // Avoid saving incomplete or unmodified card
     var updateNeeded = newCard.hints.isNotEmpty && newCard != widget.card;
