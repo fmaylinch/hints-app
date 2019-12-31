@@ -66,18 +66,35 @@ class HintsCardsState extends State<HintsCards> {
 
   void _filterCardsBySearchQuery() {
 
+    var query = _searchCtrl.text.toLowerCase();
+
     setState(() {
-      var query = _searchCtrl.text;
       print("Search query: $query");
       if (query.isEmpty) {
         _cards = _allCards;
       } else {
-        _cards = _allCards.where((c) =>
-            c.allContentLower.contains(query.toLowerCase())
-        ).toList();
+
+        var filter = query.startsWith("tag:")
+            ? (HintsCard c) => _containsAllTags(c, _tagsFromQuery(query))
+            : (HintsCard c) => c.allContentLower.contains(query);
+          _cards = _allCards.where(filter).toList();
       }
     });
   }
+
+  bool _containsAllTags(HintsCard card, List<String> tags) {
+
+    if (tags.isEmpty) return false;
+
+    for (var tag in tags) {
+      if (!card.tags.contains(tag)) return false;
+    }
+
+    return true;
+  }
+
+  List<String> _tagsFromQuery(String query) =>
+      query.substring("tag:".length).trim().split(new RegExp(r"[\s,]+")).toList();
 
   void retrieveCards(String reason) {
     print("Loading cards because: $reason");
