@@ -20,6 +20,7 @@ class _CardEditScreenState extends State<CardEditScreen> {
   int _score;
   TextEditingController _hintsController;
   TextEditingController _notesController;
+  TextEditingController _tagsController;
 
   @override
   void initState() {
@@ -28,6 +29,7 @@ class _CardEditScreenState extends State<CardEditScreen> {
     _score = widget.card.score;
     _hintsController = TextEditingController(text: widget.card.hints.join("\n"));
     _notesController = TextEditingController(text: widget.card.notes);
+    _tagsController = TextEditingController(text: widget.card.tags.join(" "));
   }
 
   @override
@@ -52,9 +54,10 @@ class _CardEditScreenState extends State<CardEditScreen> {
         body: Container(
           child: ListView(
             children: [
-              _buildField(_hintsController, "Write hints, one per line"),
+              _buildField(_hintsController, "Write hints here, one per line"),
               _buildRatingSlider(),
-              _buildField(_notesController, "Write optional notes")
+              _buildField(_notesController, "Optional notes"),
+              _buildField(_tagsController, "Optional tags", maxLines: 1)
             ]
           ),
         ),
@@ -73,16 +76,15 @@ class _CardEditScreenState extends State<CardEditScreen> {
 
   bool _saveCardAndGoBack() {
 
-    final newHints = _hintsController.text
-        .split("\n")
-        .map((x) => x.trim())
-        .where((x) => x.isNotEmpty)
-        .toList();
-    final newNotes = _notesController.text;
 
     //print("Card edited: $card");
 
-    var newCard = HintsCard(id: widget.card.id, score: _score, hints: newHints, notes: newNotes);
+    var newCard = HintsCard(
+        id: widget.card.id,
+        score: _score,
+        hints: _hintsController.text.split("\n").map((x) => x.trim()).where(_notEmpty).toList(),
+        notes: _notesController.text,
+        tags: _tagsController.text.split(new RegExp(r"[\s,]+")).where(_notEmpty).toList());
 
     // Avoid saving incomplete or unmodified card
     var updateNeeded = newCard.hints.isNotEmpty && newCard != widget.card;
@@ -95,17 +97,20 @@ class _CardEditScreenState extends State<CardEditScreen> {
     return false;
   }
 
+  /// Just to make the `where` clauses shorter
+  bool _notEmpty(String str) => str.isNotEmpty;
+
   _deleteCard() {
     Navigator.pop(context, CardEditScreenResponse(widget.card, CardEditScreenAction.delete));
   }
 
-  _buildField(TextEditingController controller, String hintText) {
+  _buildField(TextEditingController controller, String hintText, {int maxLines}) {
     return Container(
       padding: EdgeInsets.all(8),
       child: TextFormField(
           decoration: InputDecoration(hintText: hintText),
           style: TextStyle(fontSize: 20),
-          maxLines: null,
+          maxLines: maxLines,
           controller: controller
       ),
     );

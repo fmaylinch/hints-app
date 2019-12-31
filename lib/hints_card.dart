@@ -8,6 +8,7 @@ class HintsCard {
   int score;
   List<String> hints;
   String notes;
+  List<String> tags;
 
   // --- data calculated locally --- //
   /// All hints and notes together, in lower case, useful for searching/sorting
@@ -15,8 +16,10 @@ class HintsCard {
   /// hints[1] in lower case (by default ""), useful for sorting
   String hint1Lower;
 
-  HintsCard({this.id, this.score = defaultScore, this.hints = const [], this.notes}) {
-    allContentLower = (hints.join(", ") + (notes != null ? ", " + notes : "")).toLowerCase();
+  HintsCard({this.id, this.score = defaultScore, this.hints = const [], this.notes, this.tags = const []}) {
+    if (this.notes == null) this.notes = "";
+    if (this.tags == null) this.tags = [];
+    allContentLower = (hints.join(", ") + " " + notes + " " + tags.join(", ")).toLowerCase();
     hint1Lower = hints.length > 1 ? hints[1].toLowerCase() : "";
   }
 
@@ -33,14 +36,15 @@ class HintsCard {
           id == other.id &&
           score == other.score &&
           listEquals(hints, other.hints) && // https://stackoverflow.com/a/55974120/1121497
+          listEquals(tags, other.tags) &&
           notes == other.notes;
 
   @override
-  int get hashCode => id.hashCode ^ score.hashCode ^ hints.hashCode ^ notes.hashCode;
+  int get hashCode => id.hashCode ^ score.hashCode ^ hints.hashCode ^ tags.hashCode ^ notes.hashCode;
 
   @override
   String toString() {
-    return 'HintsCard{id: $id, score: $score, hints: $hints, notes: $notes}';
+    return 'HintsCard{id: $id, score: $score, hints: $hints, notes: $notes, tags: $tags}';
   }
 
 
@@ -54,6 +58,7 @@ class HintsCard {
       score: json['score'] as int,
       hints: json['hints'].cast<String>(), // https://javiercbk.github.io/json_to_dart/
       notes: json['notes'] as String,
+      tags: json['tags'].cast<String>()
     );
   }
 
@@ -70,6 +75,7 @@ class HintsCard {
     data['score'] = card.score;
     data['hints'] = card.hints;
     data['notes'] = card.notes;
+    data['tags'] = card.tags;
     return data;
   }
 }

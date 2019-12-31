@@ -62,9 +62,22 @@ class _CardViewScreenState extends State<CardViewScreen> {
         })
     );
 
-    final widgets = _revealed ?
-      [answer, ...widget.card.hints.map(_toWidget).toList(), slider, _toWidget(widget.card.notes)]
-        : [_toWidget("Hint: ${widget.card.hints[randomHintIndex]}"), answer, revealButton];
+    final widgets = _revealed
+        ? [
+            answer,
+            ...widget.card.hints.map(_toWidget).toList(),
+            slider,
+            _toWidget(widget.card.notes)
+          ]
+        : [
+            _toWidget("Hint: ${widget.card.hints[randomHintIndex]}"),
+            answer,
+            revealButton
+          ];
+
+    if (_revealed && widget.card.tags.isNotEmpty) {
+      widgets.add(_toWidget("Tags: " + widget.card.tags.join(", ")));
+    }
 
     return WillPopScope(
       onWillPop: () async => _saveCardAndGoBack(),
