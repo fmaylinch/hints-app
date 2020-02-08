@@ -2,7 +2,9 @@
 
 Flutter app to store Hint Cards. This is a kind of Memory Cards for studying.
 Here each card contains some hints (and other optional notes).
-The app will show you one of the hints, and you have to remember the rest. 
+The app will show you one of the hints, and you have to remember the rest.
+
+The app connects to a [server API](https://github.com/fmaylinch/hints-app-api).
 
 ## Check list
 
@@ -13,8 +15,9 @@ The app will show you one of the hints, and you have to remember the rest.
 - ✅ Connect to server API
 - ✅ Deploy flutter web app + server API
 - ✅ Automatize deployment
-- ❌ Play (show hints randomly)
-- ❌ Search
+- ✅ Play (show hints randomly)
+- ✅ Search
+- ❌ Install in real iPhone
 - ❌ Add users, login, security
 - ❌ Configure Android
 
