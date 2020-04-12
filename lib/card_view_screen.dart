@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'score_slider.dart';
 import 'hints_card.dart';
 
+var primaryTextColor = Colors.grey;
+var hintTextColor = Colors.grey[700];
+var backgroundColor = Color(0xFF303030);
+
 /// Views a card, first showing one of the hints,
 /// and a button to display the rest.
 ///
@@ -37,8 +41,8 @@ class _CardViewScreenState extends State<CardViewScreen> {
     var hint = "Try to write the answer here";
 
     final answer = TextFormField(
-        decoration: InputDecoration(hintText: hint),
-        style: TextStyle(fontSize: 20),
+        decoration: InputDecoration(hintText: hint, hintStyle: TextStyle(color: hintTextColor)),
+        style: TextStyle(fontSize: 20, color: primaryTextColor),
         maxLines: null,
         controller: _answerCtrl
     );
@@ -83,14 +87,15 @@ class _CardViewScreenState extends State<CardViewScreen> {
       onWillPop: () async => _saveCardAndGoBack(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('View Card', style: TextStyle(fontSize: 30, color: Colors.white)),
+          title: Text('View Card', style: TextStyle(fontSize: 30)),
           actions: <Widget>[
             IconButton(
                 icon: Icon(Icons.edit), onPressed: () => _editCard())
           ],
         ),
         body: Container(
-          margin: EdgeInsets.all(10),
+          color: backgroundColor,
+          padding: EdgeInsets.all(10),
           child: ListView(
               children: widgets.map((w) => Container(
                 child: w,

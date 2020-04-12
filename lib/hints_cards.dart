@@ -6,6 +6,11 @@ import 'card_edit_screen.dart';
 import 'cards_repo.dart';
 import 'hints_card.dart';
 
+// TODO: Organise these colors. With theme? Also, how to change field underline?
+var primaryTextColor = Colors.grey;
+var hintTextColor = Colors.grey[700];
+var backgroundColor = Color(0xFF303030);
+
 class HintsCards extends StatefulWidget {
 
   @override
@@ -48,20 +53,21 @@ class HintsCardsState extends State<HintsCards> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text('All Cards', style: TextStyle(fontSize: 30, color: Colors.white)),
+        title: Text('Hint Cards', style: TextStyle(fontSize: 30)),
         actions: <Widget>[
           IconButton(icon: _cardsSortType.icon(), onPressed: () => _sortCards(changeSortType: true)),
           IconButton(icon: Icon(Icons.play_arrow), onPressed: () => _playOneCard()),
           IconButton(icon: Icon(Icons.add), onPressed: () => _pushCreateCard())
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          SearchBar(_searchCtrl, (q) => _filterCardsBySearchQuery()),
-          Expanded(child: _buildCardList())
-        ],
-      )
-    );
+      body: Container(
+            color: backgroundColor,
+            child: Column(
+              children: <Widget>[
+                SearchBar(_searchCtrl, (q) => _filterCardsBySearchQuery()),
+                Expanded(child: _buildCardList())
+              ],
+            )));
   }
 
   void _filterCardsBySearchQuery() {
@@ -141,21 +147,34 @@ class HintsCardsState extends State<HintsCards> {
         .toList();
 
     final colors = [
-      Colors.red[200], Colors.red[100],
-      Colors.orange[200], Colors.orange[100],
-      Colors.grey[200], Colors.white,
-      Colors.blue[100], Colors.blue[200],
-      Colors.green[100], Colors.green[200]
+      Colors.red[700], Colors.red[500],
+      Colors.orange[700], Colors.orange[500],
+      Colors.grey[600], Colors.grey[800],
+      Colors.blue[700], Colors.blue[500],
+      Colors.green[700], Colors.green[500]
     ];
 
     final color = colors[min(card.score ~/ 10, 9)];
 
     return Container(
-      decoration: BoxDecoration(color: color),
+      //decoration: BoxDecoration(color: color),
       child: ListTile(
-          title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: hintWidgets
+          title: Column(
+            children: <Widget>[
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: hintWidgets
+              ),
+              SizedBox(
+                height: 1,
+                child: LinearProgressIndicator(
+                  value: card.score / 100,
+                  valueColor: AlwaysStoppedAnimation<Color>(color),
+                  backgroundColor: Colors.grey[800],
+                )
+                ,
+              )
+            ],
           ),
           onTap: () => _pushEditCard(card)
 
@@ -304,8 +323,9 @@ class SearchBar extends StatelessWidget {
       Expanded(
         child: TextField(
           decoration: InputDecoration(
-              hintText: "Search...",
-              prefixIcon: Icon(Icons.search)
+              hintText: "Search…",
+              hintStyle: TextStyle(fontSize: 20, color: hintTextColor),
+              prefixIcon: Icon(Icons.search, color: hintTextColor)
           ),
           style: TextStyle(fontSize: 20),
           controller: ctrl,
