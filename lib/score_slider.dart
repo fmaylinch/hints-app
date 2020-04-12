@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-var primaryTextColor = Colors.grey;
-var hintTextColor = Colors.grey[700];
+import 'color_util.dart';
 
 class ScoreSlider extends StatelessWidget {
 
@@ -17,13 +16,13 @@ class ScoreSlider extends StatelessWidget {
       children: <Widget>[
         Padding(
             padding: EdgeInsets.only(top: 10),
-            child: Text("How well you know this ($score)", style: TextStyle(color: hintTextColor))
+            child: Text("How well you know this ($score)", style: TextStyle(color: ColorUtil.hintTextColor))
         ),
         Slider(
           value: score.toDouble(),
           onChanged: onChanged,
-          activeColor: primaryTextColor,
-          inactiveColor: hintTextColor,
+          activeColor: ColorUtil.colorFromScore(score, ColorUtil.primaryTextColor),
+          inactiveColor: ColorUtil.inactiveColor,
           min: 0,
           max: 100,
         )

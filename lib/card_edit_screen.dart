@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
+
 import 'score_slider.dart';
 import 'hints_card.dart';
-
-var primaryTextColor = Colors.grey;
-var hintTextColor = Colors.grey[700];
-var backgroundColor = Color(0xFF303030);
+import 'color_util.dart';
 
 /// Edits a card, which may have empty data (in case it's a new card)
 /// It pops a CardScreenResponse with the card and action to do.
@@ -56,7 +54,7 @@ class _CardEditScreenState extends State<CardEditScreen> {
           actions: actions,
         ),
         body: Container(
-          color: backgroundColor,
+          color: ColorUtil.backgroundColor,
           child: ListView(
             children: [
               _buildField(_hintsController, "Write hints here, one per line"),
@@ -112,7 +110,7 @@ class _CardEditScreenState extends State<CardEditScreen> {
       child: TextFormField(
           decoration: InputDecoration(
               hintText: hintText,
-              hintStyle: TextStyle(color: hintTextColor)
+              hintStyle: TextStyle(color: ColorUtil.hintTextColor)
           ),
           style: TextStyle(fontSize: 20),
           maxLines: maxLines,

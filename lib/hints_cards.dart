@@ -1,15 +1,12 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'card_view_screen.dart';
+
 import 'main.dart';
+import 'card_view_screen.dart';
 import 'card_edit_screen.dart';
 import 'cards_repo.dart';
 import 'hints_card.dart';
-
-// TODO: Organise these colors. With theme? Also, how to change field underline?
-var primaryTextColor = Colors.grey;
-var hintTextColor = Colors.grey[700];
-var backgroundColor = Color(0xFF303030);
+import 'color_util.dart';
 
 class HintsCards extends StatefulWidget {
 
@@ -61,7 +58,7 @@ class HintsCardsState extends State<HintsCards> {
         ],
       ),
       body: Container(
-            color: backgroundColor,
+            color: ColorUtil.backgroundColor,
             child: Column(
               children: <Widget>[
                 SearchBar(_searchCtrl, (q) => _filterCardsBySearchQuery()),
@@ -146,15 +143,6 @@ class HintsCardsState extends State<HintsCards> {
         Text(it, style: TextStyle(fontSize: 20)))
         .toList();
 
-    final colors = [
-      Colors.red[700], Colors.red[500],
-      Colors.orange[700], Colors.orange[500],
-      Colors.grey[600], Colors.grey[800],
-      Colors.blue[700], Colors.blue[500],
-      Colors.green[700], Colors.green[500]
-    ];
-
-    final color = colors[min(card.score ~/ 10, 9)];
 
     return Container(
       //decoration: BoxDecoration(color: color),
@@ -169,8 +157,10 @@ class HintsCardsState extends State<HintsCards> {
                 height: 1,
                 child: LinearProgressIndicator(
                   value: card.score / 100,
-                  valueColor: AlwaysStoppedAnimation<Color>(color),
-                  backgroundColor: Colors.grey[800],
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      ColorUtil.colorFromScore(card.score, ColorUtil.inactiveColor)
+                  ),
+                  backgroundColor: ColorUtil.inactiveColor,
                 )
                 ,
               )
@@ -324,8 +314,8 @@ class SearchBar extends StatelessWidget {
         child: TextField(
           decoration: InputDecoration(
               hintText: "Search…",
-              hintStyle: TextStyle(fontSize: 20, color: hintTextColor),
-              prefixIcon: Icon(Icons.search, color: hintTextColor)
+              hintStyle: TextStyle(fontSize: 20, color: ColorUtil.hintTextColor),
+              prefixIcon: Icon(Icons.search, color: ColorUtil.hintTextColor)
           ),
           style: TextStyle(fontSize: 20),
           controller: ctrl,
