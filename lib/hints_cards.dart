@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:hints_app/security_service.dart';
 
 import 'main.dart';
 import 'card_view_screen.dart';
@@ -17,6 +18,7 @@ class HintsCards extends StatefulWidget {
 class HintsCardsState extends State<HintsCards> {
 
   late CardsRepo _cardsRepo;
+  late SecurityService _securityService;
   late List<HintsCard> _allCards;
   List<HintsCard>? _cards;
   late TextEditingController _searchCtrl;
@@ -31,6 +33,7 @@ class HintsCardsState extends State<HintsCards> {
     super.didChangeDependencies();
 
     _cardsRepo = ServicesWidget.of(context).cardsRepo;
+    _securityService = ServicesWidget.of(context).securityService;
   }
 
   @override
@@ -44,7 +47,15 @@ class HintsCardsState extends State<HintsCards> {
   Widget build(BuildContext context) {
 
     if (_cards == null) {
-      retrieveCards("Cards are not loaded");
+      _securityService.getCredentials().then((cred) {
+        if (cred != null) {
+          print("Credentials found for user: ${cred.email}");
+          retrieveCards("Cards are not loaded");
+        } else {
+          print("Credentials not found");
+          // TODO go to login
+        }
+      });
     }
 
     return Scaffold(

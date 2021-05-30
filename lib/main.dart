@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hints_app/security_service.dart';
 import 'api_cards_repo.dart';
 import 'hints_cards.dart';
 import 'cards_repo.dart';
@@ -52,11 +53,19 @@ class MyApp extends StatelessWidget {
   }
 }
 
+/// This class is used to make services available to widgets.
+/// See whether this is the recommended way.
 class ServicesWidget extends InheritedWidget {
 
-  final CardsRepo cardsRepo = ApiCardsRepo();
+  final SecurityService securityService;
+  late final CardsRepo cardsRepo;
 
-  ServicesWidget({Widget? child}) : super(child: child!);
+  ServicesWidget({Widget? child}) :
+        securityService = SecurityService(),
+        // cardsRepo = ApiCardsRepo(securityService), // TODO not possible
+        super(child: child!) {
+    cardsRepo = ApiCardsRepo(securityService);
+  }
 
   static ServicesWidget of(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<ServicesWidget>()!;

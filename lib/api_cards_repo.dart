@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'cards_repo.dart';
+import 'security_service.dart';
 import 'hints_card.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiCardsRepo implements CardsRepo {
 
@@ -15,15 +15,18 @@ class ApiCardsRepo implements CardsRepo {
 
   static String _baseUrl = _apiRootUrl + 'cards';
 
-  ApiCardsRepo() {
+  final SecurityService securityService;
+
+  ApiCardsRepo(this.securityService) {
     print("baseUrl: $_baseUrl");
   }
 
   @override
   Future<List<HintsCard>> getAll() {
 
-    return _testGetJwt().then((jwt) {
-      var headers = {"Authorization": "Bearer $jwt"};
+    // TODO use await
+    return securityService.getCredentials().then((cred) {
+      var headers = {"Authorization": "Bearer ${cred!.jwt}"};
       print("Loading cards...");
       return http
           .post(Uri.parse('$_baseUrl/getAll'), headers: headers)
@@ -32,19 +35,6 @@ class ApiCardsRepo implements CardsRepo {
         return HintsCard.listFromJson(decodeBody(r));
       });
     });
-  }
-
-  Future<String> _testGetJwt() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var jwt = prefs.getString('jwt');
-    if (jwt != null) {
-      print("Found jwt = ${jwt.substring(0, 10)}...");
-    } else {
-      jwt = "SAMPLE_JWT_HERE"; // TODO testing
-      print("Storing jwt = ${jwt.substring(0, 10)}...");
-      await prefs.setString('jwt', jwt);
-    }
-    return Future.value(jwt);
   }
 
   @override
