@@ -23,7 +23,7 @@ class _CardViewScreenState extends State<CardViewScreen> {
 
   TextEditingController _answerCtrl = TextEditingController();
   bool _revealed = false;
-  int _score;
+  late int _score;
 
 
   @override
@@ -58,7 +58,7 @@ class _CardViewScreenState extends State<CardViewScreen> {
 
     final randomHintIndex = Random().nextInt(widget.card.hints.length);
 
-    var slider = ScoreSlider(score: _score, onChanged: (newValue) =>
+    var slider = ScoreSlider(_score, (newValue) =>
         setState(() {
           _score = newValue.round();
         })
@@ -69,7 +69,7 @@ class _CardViewScreenState extends State<CardViewScreen> {
             answer,
             ...widget.card.hints.map(_toWidget).toList(),
             slider,
-            _toWidget(widget.card.notes)
+            _toWidget(widget.card.notes ?? "")
           ]
         : [
             _toWidget("Hint: ${widget.card.hints[randomHintIndex]}"),

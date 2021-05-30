@@ -19,6 +19,6 @@ class ColorUtil {
       Colors.teal[600], Colors.green[400]
     ];
 
-    return colors[min(score ~/ 10, 9)];
+    return colors[min(score ~/ 10, 9)]!;
   }
 }

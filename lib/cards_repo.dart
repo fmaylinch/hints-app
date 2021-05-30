@@ -38,7 +38,7 @@ class InMemoryCardsRepo implements CardsRepo {
       nextId += 1;
     }
 
-    _cardsMap.update(card.id, (c) => card, ifAbsent: () => card);
+    _cardsMap.update(card.id!, (c) => card, ifAbsent: () => card);
 
     return Future.value(card);
   }

@@ -4,22 +4,22 @@ class HintsCard {
 
   static const defaultScore = 50;
 
-  String id;
+  String? id;
   int score;
   List<String> hints;
-  String notes;
+  String? notes;
   List<String> tags;
 
   // --- data calculated locally --- //
   /// All hints and notes together, in lower case, useful for searching/sorting
-  String allContentLower;
+  late String allContentLower;
   /// hints[1] in lower case (by default ""), useful for sorting
-  String hint1Lower;
+  late String hint1Lower;
 
   HintsCard({this.id, this.score = defaultScore, this.hints = const [], this.notes, this.tags = const []}) {
     if (this.notes == null) this.notes = "";
     if (this.tags == null) this.tags = [];
-    allContentLower = (hints.join(", ") + " " + notes + " " + tags.join(", ")).toLowerCase();
+    allContentLower = (hints.join(", ") + " " + (notes ?? "") + " " + tags.join(", ")).toLowerCase();
     hint1Lower = hints.length > 1 ? hints[1].toLowerCase() : "";
   }
 

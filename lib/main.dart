@@ -56,10 +56,10 @@ class ServicesWidget extends InheritedWidget {
 
   final CardsRepo cardsRepo = ApiCardsRepo();
 
-  ServicesWidget({Widget child}) : super(child: child);
+  ServicesWidget({Widget? child}) : super(child: child!);
 
   static ServicesWidget of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<ServicesWidget>();
+    return context.dependOnInheritedWidgetOfExactType<ServicesWidget>()!;
   }
 
   @override

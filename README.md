@@ -1,33 +1,7 @@
 # HintsApp
 
-Flutter app to store Hint Cards. This is a kind of Memory Cards for studying.
-Here each card contains some hints (and other optional notes).
-The app will show you one of the hints, and you have to remember the rest.
+**Important**: This project is currently outdated. I am updating it.
 
-The app connects to a [server API](https://github.com/fmaylinch/hints-app-api).
+The up-to-date frontend is [hints-app-vue](https://github.com/fmaylinch/hints-app-vue).
+It connects [hints-app-api](https://github.com/fmaylinch/hints-app-api).
 
-## Check list
-
-- ✅ Create Flutter project
-- ✅ Configure iOS and Web
-- ✅ Functional app but data in stored in memory
-- ✅ Create server API
-- ✅ Connect to server API
-- ✅ Deploy flutter web app + server API
-- ✅ Automatize deployment
-- ✅ Play (show hints randomly)
-- ✅ Search
-- ❌ Install in real iPhone
-- ❌ Add users, login, security
-- ❌ Configure Android
-
-## Information about Flutter
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

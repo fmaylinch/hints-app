@@ -16,10 +16,10 @@ class HintsCards extends StatefulWidget {
 
 class HintsCardsState extends State<HintsCards> {
 
-  CardsRepo _cardsRepo;
-  List<HintsCard> _allCards;
-  List<HintsCard> _cards;
-  TextEditingController _searchCtrl;
+  late CardsRepo _cardsRepo;
+  late List<HintsCard> _allCards;
+  List<HintsCard>? _cards;
+  late TextEditingController _searchCtrl;
   _CardSortType _cardsSortType = _CardSortTypeExt.apiDefault();
 
   /// Used to display SnackBar
@@ -124,9 +124,9 @@ class HintsCardsState extends State<HintsCards> {
 
     return ListView.builder(
         padding: const EdgeInsets.all(8),
-        itemCount: _cards.length,
+        itemCount: _cards!.length,
         itemBuilder: (context, index) {
-          return _buildItem(_cards, index);
+          return _buildItem(_cards!, index);
         }
     );
   }
@@ -158,7 +158,7 @@ class HintsCardsState extends State<HintsCards> {
                 child: LinearProgressIndicator(
                   value: card.score / 100,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                      ColorUtil.colorFromScore(card.score, ColorUtil.inactiveColor)
+                      ColorUtil.colorFromScore(card.score, ColorUtil.inactiveColor!)
                   ),
                   backgroundColor: ColorUtil.inactiveColor,
                 )
@@ -196,10 +196,10 @@ class HintsCardsState extends State<HintsCards> {
 
     if (_cardsNotLoaded()) return;
 
-    final randomIndex = Random().nextInt(_cards.length);
+    final randomIndex = Random().nextInt(_cards!.length);
 
     final CardViewScreenResponse response = await Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => CardViewScreen(_cards[randomIndex]))
+      MaterialPageRoute(builder: (context) => CardViewScreen(_cards![randomIndex]))
     );
 
     switch (response.action) {
@@ -253,7 +253,7 @@ class HintsCardsState extends State<HintsCards> {
           _showSnackBar("$action: ${card.hints[0]}");
 
           if (updating) {
-            _allCards[_indexOfId(card.id)] = card;
+            _allCards[_indexOfId(card.id!)] = card;
           } else {
             _allCards.add(card);
           }
@@ -265,12 +265,12 @@ class HintsCardsState extends State<HintsCards> {
       case CardEditScreenAction.delete:
 
         print("Removing ${response.card}");
-        _cardsRepo.deleteOne(response.card.id).then((card) {
+        _cardsRepo.deleteOne(response.card.id!).then((card) {
 
           // retrieveCards("One was deleted");
           // Instead of retrieving cards, we remove the card and sort the list
           _showSnackBar("Removed: ${card.hints[0]}");
-          _allCards.removeAt(_indexOfId(card.id));
+          _allCards.removeAt(_indexOfId(card.id!));
           _sortCards();
 
         });
@@ -290,9 +290,9 @@ class HintsCardsState extends State<HintsCards> {
   void _showSnackBar(String message) {
 
     // Don't wait for previous snackbar to be hidden
-    _scaffoldKey.currentState.removeCurrentSnackBar();
+    _scaffoldKey.currentState?.removeCurrentSnackBar();
 
-    _scaffoldKey.currentState.showSnackBar(SnackBar(
+    _scaffoldKey.currentState?.showSnackBar(SnackBar(
       content: Text(message, style: TextStyle(fontSize: 20)),
       duration: Duration(seconds: 3)
     ));

@@ -7,7 +7,7 @@ class ScoreSlider extends StatelessWidget {
   final int score;
   final ValueChanged<double> onChanged;
 
-  ScoreSlider({this.score, this.onChanged});
+  ScoreSlider(this.score, this.onChanged);
 
   @override
   Widget build(BuildContext context) {

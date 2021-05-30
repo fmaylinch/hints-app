@@ -19,10 +19,10 @@ class CardEditScreen extends StatefulWidget {
 
 class _CardEditScreenState extends State<CardEditScreen> {
 
-  int _score;
-  TextEditingController _hintsController;
-  TextEditingController _notesController;
-  TextEditingController _tagsController;
+  late int _score;
+  late TextEditingController _hintsController;
+  late TextEditingController _notesController;
+  late TextEditingController _tagsController;
 
   @override
   void initState() {
@@ -70,7 +70,7 @@ class _CardEditScreenState extends State<CardEditScreen> {
 
   Widget _buildRatingSlider() {
 
-    return ScoreSlider(score: _score, onChanged: (newValue) =>
+    return ScoreSlider(_score, (newValue) =>
       setState(() {
         _score = newValue.round();
       })
@@ -104,7 +104,7 @@ class _CardEditScreenState extends State<CardEditScreen> {
     Navigator.pop(context, CardEditScreenResponse(widget.card, CardEditScreenAction.delete));
   }
 
-  _buildField(TextEditingController controller, String hintText, {int maxLines}) {
+  _buildField(TextEditingController controller, String hintText, {int maxLines = 1}) {
     return Container(
       padding: EdgeInsets.all(8),
       child: TextFormField(
